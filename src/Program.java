@@ -107,18 +107,28 @@ public class Program {
 	}
 	
 	public static String convertToHash(String password) {
-		
+		//convert string using hash algorithm
 		String hash = "";
         int ascii_int;
-        
 		for(int i = 0; i < password.length(); i++) {
 		    ascii_int = (int) password.charAt(i);
-		    ascii_int += 5;
+		    ascii_int += 26;
 		    hash += Character.toString((char)ascii_int);
 		}
 		return hash;
 	}
 	
+	public static String reverseHash(String hash) {
+		//reverse hash code to original password for validation using reverse hash algorithm
+		String password = "";
+        int ascii_int = 0;
+        for(int i = 0; i < hash.length(); i++) {
+		    ascii_int = (int) hash.charAt(i);
+		    ascii_int -= 26;
+		    password += Character.toString((char)ascii_int);
+		}
+        return password;
+	}
 	
 	
 	
