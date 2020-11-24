@@ -32,13 +32,48 @@ public class Program {
 		return userInput_int;
 	}
 	
+	
+	
 	public static boolean verifyUsername(String username) {
-		//makes sure username doesn't contain spaces
+		//valid username CANNOT contain any spaces
 		if(username.contains(" "))
 			return false;
 		
 		return true;
 	}
+	
+	public static boolean verifyPassword(String password) {
+		/*valid password requires:
+		-minimum of 8 characters
+		-at least one special character
+		-at least one capital letter
+		-at least one lower-case letter
+		-at least one number*/
+		
+		if(password.length() < 8)
+			return false;
+		
+		boolean containsSpecial=false, containsCapital=false, containsLower=false, containsNumber=false;
+		for (char c : password.toCharArray()) {
+			
+			if (containsSpecial && containsCapital && containsLower && containsNumber)
+				return true;
+			else {
+				if (Character.isUpperCase(c))
+					containsCapital = true;
+				else if (Character.isLowerCase(c))
+					containsLower = true;
+				else if (Character.isDigit(c))
+					containsNumber = true;
+				else
+					containsSpecial = true;
+			}
+		}
+
+		return (containsSpecial && containsCapital && containsLower && containsNumber);
+	}
+	
+	
 	
 	
 }
