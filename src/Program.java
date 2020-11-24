@@ -73,6 +73,27 @@ public class Program {
 		return (containsSpecial && containsCapital && containsLower && containsNumber);
 	}
 	
+	public static boolean verifyPhoneNumber(String phoneNumber) {
+		//valid phone number contains 10 digits
+		if(phoneNumber.length() > 14)
+			return false;
+		
+		int digitCounter = 0;
+		for(char c : phoneNumber.toCharArray()) {
+			if(Character.isLetter(c))
+				return false;
+			else if(Character.isDigit(c)) {
+				digitCounter++;
+				if(digitCounter > 10)
+					return false;
+			}
+		}
+		if(digitCounter != 10)
+			return false;
+		
+		return true;
+	}
+	
 	
 	
 	
