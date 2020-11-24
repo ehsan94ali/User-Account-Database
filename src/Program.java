@@ -97,6 +97,7 @@ public class Program {
 	}
 	
 	public static boolean verifyEmail(String email) {
+		//validate email format
 		Pattern pattern = Pattern.compile("[\\w.]+@\\w+\\.(com|net|gov|edu|org|ai|io)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
         if(!matcher.find())
@@ -104,6 +105,20 @@ public class Program {
         
         return true;
 	}
+	
+	public static String convertToHash(String password) {
+		
+		String hash = "";
+        int ascii_int;
+        
+		for(int i = 0; i < password.length(); i++) {
+		    ascii_int = (int) password.charAt(i);
+		    ascii_int += 5;
+		    hash += Character.toString((char)ascii_int);
+		}
+		return hash;
+	}
+	
 	
 	
 	
