@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.jar.Attributes.Name;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Program {
 
@@ -92,6 +94,15 @@ public class Program {
 			return false;
 		
 		return true;
+	}
+	
+	public static boolean verifyEmail(String email) {
+		Pattern pattern = Pattern.compile("[\\w.]+@\\w+\\.(com|net|gov|edu|org|ai|io)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        if(!matcher.find())
+            return false;
+        
+        return true;
 	}
 	
 	
