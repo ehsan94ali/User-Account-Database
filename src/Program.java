@@ -130,6 +130,15 @@ public class Program {
         return password;
 	}
 	
+	public static void update_database(UserAccount user, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+		//add UserAccount object to database
+		usernames.add(user.getUsername());
+		hashes.add(user.getHash());
+		phoneNumbers.add(user.getPhoneNumber());
+		emails.add(user.getEmail());
+	}
+	
+	
 	
 	
 	
