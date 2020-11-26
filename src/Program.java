@@ -101,6 +101,21 @@ public class Program {
 		return true;
 	}
 	
+	public static String formatPhoneNumber(String phoneNumber) {
+		String formatted = "";
+        for(int i = 0; i < phoneNumber.length(); i++){
+            if(Character.isDigit(phoneNumber.charAt(i)))
+                formatted += phoneNumber.charAt(i);
+        }
+        return formatted;
+	}
+
+	public static boolean phoneNumberFound(String phoneNumber, ArrayList<String> phoneNumbers) {
+		//make sure phone number (already formatted) doesn't already exist in the database
+		String phoneNumber_formatted = formatPhoneNumber(phoneNumber);
+		return phoneNumbers.contains(phoneNumber_formatted);
+	}
+	
 	public static boolean validateEmail(String email) {
 		//validate email format
 		Pattern pattern = Pattern.compile("[\\w.]+@\\w+\\.(com|net|gov|edu|org|ai|io)", Pattern.CASE_INSENSITIVE);
