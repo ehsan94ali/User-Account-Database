@@ -126,6 +126,11 @@ public class Program {
         return true;
 	}
 	
+	public static boolean emailFound(String email, ArrayList<String> emails) {
+		//make sure email doesn't already exist in database
+		return emails.contains(email);
+	}
+	
 	public static String convertToHash(String password) {
 		//convert string using hash algorithm
 		String hash = "";
