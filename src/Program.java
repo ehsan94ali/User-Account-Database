@@ -44,6 +44,11 @@ public class Program {
 		return true;
 	}
 	
+	public static boolean usernameFound(String username, ArrayList<String> usernames) {
+		//make sure username doesn't already exist in the database
+		return usernames.contains(username);
+	}
+	
 	public static boolean verifyPassword(String password) {
 		/*valid password requires:
 		-minimum of 8 characters
