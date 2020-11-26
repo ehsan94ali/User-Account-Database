@@ -36,7 +36,7 @@ public class Program {
 	
 	
 	
-	public static boolean verifyUsername(String username) {
+	public static boolean validateUsername(String username) {
 		//valid username CANNOT contain any spaces
 		if(username.contains(" "))
 			return false;
@@ -49,7 +49,7 @@ public class Program {
 		return usernames.contains(username);
 	}
 	
-	public static boolean verifyPassword(String password) {
+	public static boolean validatePassword(String password) {
 		/*valid password requires:
 		-minimum of 8 characters
 		-at least one special character
@@ -80,7 +80,7 @@ public class Program {
 		return (containsSpecial && containsCapital && containsLower && containsNumber);
 	}
 	
-	public static boolean verifyPhoneNumber(String phoneNumber) {
+	public static boolean validatePhoneNumber(String phoneNumber) {
 		//valid phone number contains 10 digits
 		if(phoneNumber.length() > 14)
 			return false;
@@ -101,7 +101,7 @@ public class Program {
 		return true;
 	}
 	
-	public static boolean verifyEmail(String email) {
+	public static boolean validateEmail(String email) {
 		//validate email format
 		Pattern pattern = Pattern.compile("[\\w.]+@\\w+\\.(com|net|gov|edu|org|ai|io)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
