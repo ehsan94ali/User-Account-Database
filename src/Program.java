@@ -116,7 +116,7 @@ public class Program {
 	
 	public static boolean validateUsername(String username) {
 		//valid username CANNOT contain any spaces
-		if(username.contains("d"))
+		if(username.contains(" "))
 			return false;
 		
 		return true;
