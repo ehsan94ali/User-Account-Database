@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.jar.Attributes.Name;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +12,7 @@ public class Program {
 	
 	public static int mainMenu() {
 		
-		char userInput;
+		char input;
 		Scanner scanner = new Scanner(System.in);
 		
 		do {
@@ -22,23 +21,102 @@ public class Program {
 			System.out.println("1) Create New Account");
 			System.out.println("2) Sign In");
 			System.out.print("User input: ");
-			userInput = scanner.next().charAt(0);
+			input = scanner.next().charAt(0);
 			
-			if(userInput != '1' && userInput != '2')
+			if(input != '1' && input != '2')
 				System.out.println("\nERROR. Invalid user input.");
 			
-		}while(userInput != '1' && userInput != '2');
+		}while(input != '1' && input != '2');
 		
 		scanner.close();
-		int userInput_int = userInput - '0';
-		return userInput_int;
+		int input_int = input - '0';
+		return input_int;
 	}
 	
-	
+	public static UserAccount createNewUserAccount(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+		
+		UserAccount newUser = new UserAccount();
+		Scanner scanner = new Scanner(System.in);
+		String input;
+		
+		System.out.println("Create New Account");
+		System.out.println("==================");
+		
+		//username
+		do {
+			System.out.print("\nUsername: ");
+			input = scanner.nextLine();
+			
+			if(!validateUsername(input))
+				System.out.println("ERROR. Username '" + input + "' is INVALID. Username CANNOT contain spaces");
+			else if(usernameFound(input, usernames))
+				System.out.println("ERROR. Username '" + input + "' already exists.");
+			else
+				System.out.println("Username '" + input + "' is VALID and available.");
+		}while(usernameFound(input, usernames) || !validateUsername(input));
+		newUser.setUsername(input);
+		
+		//password
+		do {
+			System.out.print("\nPassword: ");
+			input = scanner.nextLine();
+			
+			if(!validatePassword(input)) {
+				System.out.println("ERROR. Invalid password. Password must contain:" 
+						+ "\n-AT LEAST 8 CHARACTERS"
+						+ "\n-a SPECIAL CHARACTER" 
+						+ "\n-a NUMBER" 
+						+ "\n-a LOWERCASE letter" 
+						+ "\n-AND a CAPITAL letter");	
+			}
+			else
+				System.out.println("Password accepted.");
+			
+			//add *verify password* option by entering twice
+			
+		}while(!validatePassword(input));
+		newUser.setHash(convertToHash(input));
+		
+		//phone number
+		do {
+			System.out.print("\nPhone Number: ");
+			input = scanner.nextLine();
+			
+			if(!validatePhoneNumber(input))
+				System.out.println("ERROR. Phone Number '" + input + "' is invalid. Phone number must only contain 10 digits");
+			else if(phoneNumberFound(input, phoneNumbers))
+				System.out.println("ERROR. Phone Number '" + input + "' is already registered with another account.");
+			else
+				System.out.println("Phone Number '" + input + "' is now SUCCESSFULLY linked to your account.");
+			
+		}while(phoneNumberFound(input, phoneNumbers) || !validatePhoneNumber(input));
+		input = formatPhoneNumber(input);
+		newUser.setPhoneNumber(input);
+		
+		//email address
+		do {
+			System.out.print("\nEmail Address: ");
+			input = scanner.nextLine();
+			
+			if(!validateEmail(input))
+				System.out.println("ERROR. Email Address '" + input + "' is an INVALID email address.");
+			else if(emailFound(input, emails))
+				System.out.println("ERROR. Email Address '" + input + "' is already registered with another account.");
+			else
+				System.out.println("Email Address '" + input + "' is now SUCCESSFULLY linked to your account.");
+		}while(emailFound(input, emails) || !validateEmail(input));
+		newUser.setEmail(input);
+		
+		update_database(newUser, usernames, hashes, phoneNumbers, emails);
+		System.out.println("Account SUCCESSFULLY created.");
+		
+		scanner.close();
+		return newUser;
+	}
 	
 	public static boolean validateUsername(String username) {
 		//valid username CANNOT contain any spaces
-		if(username.contains(" "))
+		if(username.contains("d"))
 			return false;
 		
 		return true;
