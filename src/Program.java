@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,7 +9,55 @@ public class Program {
 
 	public static void main(String[] args) {
 		
+		boolean database_online = false;
+		ArrayList<String> usernames = new ArrayList<>();
+		ArrayList<String> hashes = new ArrayList<>();
+		ArrayList<String> phoneNumbers = new ArrayList<>();
+		ArrayList<String> emails = new ArrayList<>();
 		
+		File database_folder = new File("Databases");
+		File userAccount_database = new File("Databases/account_database.xlsx");
+		File username_database = new File("Databases/username_database.xlsx");
+		File hash_database = new File("Databases/hashes_database.xlsx");
+		File phoneNumber_database = new File("Databases/phoneNumber_database.xlsx");
+		File email_database = new File("Databases/email_database.xlsx");
+		
+		/*
+		 * HANDLE database_online variable
+		 * if the database did NOT exist - 
+		 * add column names to top of
+		 * userAccount_database file
+		 */
+		
+		create_database_folder(database_folder);
+		create_database_file(userAccount_database);
+		create_database_file(username_database);
+		create_database_file(hash_database);
+		create_database_file(phoneNumber_database);
+		create_database_file(email_database);
+		
+		System.out.println("program terminated.");
+		
+	}
+	
+	public static void create_database_folder(File database_folder) {
+		//create database folder if it doesn't already exist
+		if(database_folder.mkdir()) {
+			try {
+				database_folder.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void create_database_file(File database_file) {
+		//create database file if it doesn't already exist
+		try {
+			database_file.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static int mainMenu() {
