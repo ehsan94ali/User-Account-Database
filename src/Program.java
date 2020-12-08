@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,15 +35,6 @@ public class Program {
 		 *   userAccount_database file
 		 * - fill up ArrayLists with file data
 		 */
-		if(!database_folder.exists()) {
-			try {
-				FileWriter userAccount_writer = new FileWriter(userAccount_database);
-				userAccount_writer.write("Username\tHash-Password\tPhone Number\tEmail Address");
-				userAccount_writer.close();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
 		
 		create_database_folder(database_folder);
 		create_database_file(userAccount_database);
@@ -61,6 +53,13 @@ public class Program {
 			if(!database_online) {
 				userAccount_writer.write("Username\tHash-Password\tPhone Number\tEmail Address");
 				database_online = true;
+			}
+			else {
+				//read files and fill up local storage databases
+				fillArrayList(username_database, usernames);
+				fillArrayList(hash_database, hashes);
+				fillArrayList(phoneNumber_database, phoneNumbers);
+				fillArrayList(email_database, emails);
 			}
 			userAccount_writer.close();
 			username_writer.close();
@@ -93,6 +92,20 @@ public class Program {
 		try {
 			database_file.createNewFile();
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void fillArrayList(File database_file, ArrayList<String> database) {
+		try {
+			Scanner scanner = new Scanner(database_file);
+			String data;
+			while(scanner.hasNextLine()) {
+				data = scanner.nextLine();
+			}
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
