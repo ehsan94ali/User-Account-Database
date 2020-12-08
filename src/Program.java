@@ -28,6 +28,15 @@ public class Program {
 		 * add column names to top of
 		 * userAccount_database file
 		 */
+		if(!database_folder.exists()) {
+			try {
+				FileWriter userAccount_writer = new FileWriter(userAccount_database);
+				userAccount_writer.write("Username\tHash-Password\tPhone Number\tEmail Address");
+				userAccount_writer.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		create_database_folder(database_folder);
 		create_database_file(userAccount_database);
