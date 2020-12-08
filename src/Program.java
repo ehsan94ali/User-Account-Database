@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.FileWriter;
 
 public class Program {
 
@@ -22,11 +23,16 @@ public class Program {
 		File phoneNumber_database = new File("Databases/phoneNumber_database.xlsx");
 		File email_database = new File("Databases/email_database.xlsx");
 		
+		if(database_folder.exists())
+			database_online = true;
+		
+		
 		/*
 		 * HANDLE database_online variable
-		 * if the database did NOT exist - 
-		 * add column names to top of
-		 * userAccount_database file
+		 * if the database did NOT exist
+		 * - add column names to top of
+		 *   userAccount_database file
+		 * - fill up ArrayLists with file data
 		 */
 		
 		create_database_folder(database_folder);
@@ -35,6 +41,28 @@ public class Program {
 		create_database_file(hash_database);
 		create_database_file(phoneNumber_database);
 		create_database_file(email_database);
+		
+		try {
+			FileWriter userAccount_writer = new FileWriter(userAccount_database);
+			FileWriter username_writer = new FileWriter(username_database);
+			FileWriter hash_writer = new FileWriter(hash_database);
+			FileWriter phoneNumber_writer = new FileWriter(phoneNumber_database);
+			FileWriter email_writer = new FileWriter(email_database);
+			
+			if(!database_online) {
+				userAccount_writer.write("Username\tHash-Password\tPhone Number\tEmail Address");
+				database_online = true;
+			}
+			userAccount_writer.close();
+			username_writer.close();
+			hash_writer.close();
+			phoneNumber_writer.close();
+			email_writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch  block
+			e.printStackTrace();
+		}
+			
 		
 		System.out.println("program terminated.");
 		
