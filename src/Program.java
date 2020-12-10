@@ -27,15 +27,6 @@ public class Program {
 		if(database_folder.exists())
 			database_online = true;
 		
-		
-		/*
-		 * HANDLE database_online variable
-		 * if the database did NOT exist
-		 * - add column names to top of
-		 *   userAccount_database file
-		 * - fill up ArrayLists with file data
-		 */
-		
 		create_database_folder(database_folder);
 		create_database_file(userAccount_database);
 		create_database_file(username_database);
@@ -61,6 +52,7 @@ public class Program {
 				fillArrayList(phoneNumber_database, phoneNumbers);
 				fillArrayList(email_database, emails);
 			}
+			
 			userAccount_writer.close();
 			username_writer.close();
 			hash_writer.close();
@@ -70,7 +62,31 @@ public class Program {
 			// TODO Auto-generated catch  block
 			e.printStackTrace();
 		}
+		
+		int user_input;
+		
+		do{
+			user_input = mainMenu();
+		
+			if(user_input == 1) {
+				//create new user account
+				UserAccount newAccount = createNewUserAccount(usernames, hashes, phoneNumbers, emails);
+				
+				
+			}
+			else if(user_input == 2) {
+				//user sign in
+				signin(usernames, hashes, phoneNumbers, emails);
+			}
+			else {
+				//quit
+				
+			}
+		}while(user_input != 3);
+		
 			
+		//UPDATE FILES USING LOCAL DATABASES BEFORE TERMINATING PROGRAM!!
+		
 		
 		System.out.println("program terminated.");
 		
@@ -102,6 +118,7 @@ public class Program {
 			String data;
 			while(scanner.hasNextLine()) {
 				data = scanner.nextLine();
+				database.add(data);
 			}
 			scanner.close();
 		} catch (FileNotFoundException e) {
@@ -120,17 +137,146 @@ public class Program {
 			System.out.println("=====================");
 			System.out.println("1) Create New Account");
 			System.out.println("2) Sign In");
+			System.out.println("3) Quit");
 			System.out.print("User input: ");
 			input = scanner.next().charAt(0);
 			
-			if(input != '1' && input != '2')
+			if(input != '1' && input != '2' && input != '3')
 				System.out.println("\nERROR. Invalid user input.");
 			
-		}while(input != '1' && input != '2');
+		}while(input != '1' && input != '2' && input != '3');
 		
 		scanner.close();
 		int input_int = input - '0';
 		return input_int;
+	}
+	
+	public static void signin(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+		
+		char menu_input;
+		String username_input, password_input;
+		Scanner scanner = new Scanner(System.in);
+		
+		do {
+			System.out.println("\nSign In");
+			System.out.println("==================");
+			System.out.println("1) Login");
+			System.out.println("2) Forgot Password");
+			System.out.println("3) Back");
+			System.out.print("User input: ");
+			menu_input = scanner.next().charAt(0);
+			
+			if(menu_input != '1' && menu_input != '2' && menu_input != '3')
+				System.out.println("\nERROR. Invalid user input.");
+			
+		}while(menu_input != '1' && menu_input != '2' && menu_input != '3');
+		
+		
+		int index = -1;
+		String phoneNumber_input, email_input, hash;
+		
+		if(menu_input == '1') {
+			//login screen
+			System.out.println("\nLogin");
+			System.out.println("====================");
+			System.out.print("\nUsername: ");
+			username_input = scanner.nextLine();
+			System.out.print("\nPassword: ");
+			password_input = scanner.nextLine();
+			
+			if(usernames.contains(username_input))
+				index = usernames.indexOf(username_input);
+			else
+				System.out.println("ERROR. Username or password is INCORRECT");
+			
+			hash = convertToHash(password_input);
+			
+			if(index >= 0) {
+				if(hash.equals(hashes.get(index)))
+					System.out.println("\nSuccessful login.");
+				else
+					System.out.println("ERROR. Username or password is INCORRECT");
+			}
+			
+			
+		}
+		else if(menu_input == '2') {
+			//forgot password
+			System.out.println("\nForgot Password");
+			System.out.println("==============");
+			System.out.print("\nUsername: ");
+			username_input = scanner.nextLine();
+			
+			if(usernames.contains(username_input)){
+				
+				index = usernames.indexOf(username_input);
+				System.out.print("\nPhone Number: ");
+				phoneNumber_input = scanner.nextLine();
+				if(phoneNumberFound(phoneNumber_input, phoneNumbers)) {
+					phoneNumber_input = formatPhoneNumber(phoneNumber_input);
+					if(!phoneNumber_input.equals(phoneNumbers.get(index))) {
+						System.out.println("ERROR. Phone number '" + phoneNumber_input + "' is NOT linked to this account (" + username_input + ").");
+						scanner.close();
+						return;
+					}
+						
+				}
+				else {
+					System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database");
+					scanner.close();
+					return;
+				}
+				
+				System.out.print("\nEmail: ");
+				email_input = scanner.nextLine();
+				if(emails.contains(email_input)) {
+					if(!email_input.equals(emails.get(index))) {
+						System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + username_input + ").");
+						scanner.close();
+						return;
+					}
+						
+				}
+				else {
+					System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database");
+					scanner.close();
+					return;
+				}
+			}
+			else {
+				System.out.println("ERROR. Username '" + username_input + "' does NOT exist in our database.");
+				scanner.close();
+				return;
+			}
+			
+			//change password and update database
+			String newPassword_input;
+			System.out.println("\nChange Password");
+			System.out.println("===============");
+			
+			do {
+				System.out.print("\nNew Password: ");
+				newPassword_input = scanner.nextLine();
+				
+				if(!validatePassword(newPassword_input)) {
+					System.out.println("ERROR. Invalid password. Password must contain:" 
+							+ "\n-AT LEAST 8 CHARACTERS"
+							+ "\n-a SPECIAL CHARACTER" 
+							+ "\n-a NUMBER" 
+							+ "\n-a LOWERCASE letter" 
+							+ "\n-AND a CAPITAL letter");	
+				}
+				else {
+					hash = newPassword_input;
+					hashes.set(index, hash);
+					System.out.println("Password accepted.");
+				}
+				//add *verify password* option by entering twice
+				
+			}while(!validatePassword(newPassword_input));
+		}
+		
+		scanner.close();
 	}
 	
 	public static UserAccount createNewUserAccount(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
@@ -139,7 +285,7 @@ public class Program {
 		Scanner scanner = new Scanner(System.in);
 		String input;
 		
-		System.out.println("Create New Account");
+		System.out.println("\nCreate New Account");
 		System.out.println("==================");
 		
 		//username
@@ -149,11 +295,11 @@ public class Program {
 			
 			if(!validateUsername(input))
 				System.out.println("ERROR. Username '" + input + "' is INVALID. Username CANNOT contain spaces");
-			else if(usernameFound(input, usernames))
+			else if(usernames.contains(input))
 				System.out.println("ERROR. Username '" + input + "' already exists.");
 			else
 				System.out.println("Username '" + input + "' is VALID and available.");
-		}while(usernameFound(input, usernames) || !validateUsername(input));
+		}while(usernames.contains(input) || !validateUsername(input));
 		newUser.setUsername(input);
 		
 		//password
@@ -200,11 +346,11 @@ public class Program {
 			
 			if(!validateEmail(input))
 				System.out.println("ERROR. Email Address '" + input + "' is an INVALID email address.");
-			else if(emailFound(input, emails))
+			else if(emails.contains(input))
 				System.out.println("ERROR. Email Address '" + input + "' is already registered with another account.");
 			else
 				System.out.println("Email Address '" + input + "' is now SUCCESSFULLY linked to your account.");
-		}while(emailFound(input, emails) || !validateEmail(input));
+		}while(emails.contains(input) || !validateEmail(input));
 		newUser.setEmail(input);
 		
 		update_database(newUser, usernames, hashes, phoneNumbers, emails);
@@ -221,12 +367,7 @@ public class Program {
 		
 		return true;
 	}
-	
-	public static boolean usernameFound(String username, ArrayList<String> usernames) {
-		//make sure username doesn't already exist in the database
-		return usernames.contains(username);
-	}
-	
+
 	public static boolean validatePassword(String password) {
 		/*valid password requires:
 		-minimum of 8 characters
@@ -303,12 +444,7 @@ public class Program {
         
         return true;
 	}
-	
-	public static boolean emailFound(String email, ArrayList<String> emails) {
-		//make sure email doesn't already exist in database
-		return emails.contains(email);
-	}
-	
+
 	public static String convertToHash(String password) {
 		//convert string using hash algorithm
 		String hash = "";
@@ -321,18 +457,6 @@ public class Program {
 		return hash;
 	}
 	
-	public static String reverseHash(String hash) {
-		//reverse hash code to original password for validation using reverse hash algorithm
-		String password = "";
-        int ascii_int = 0;
-        for(int i = 0; i < hash.length(); i++) {
-		    ascii_int = (int) hash.charAt(i);
-		    ascii_int -= 26;
-		    password += Character.toString((char)ascii_int);
-		}
-        return password;
-	}
-	
 	public static void update_database(UserAccount user, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		//add UserAccount object to database
 		usernames.add(user.getUsername());
@@ -340,9 +464,5 @@ public class Program {
 		phoneNumbers.add(user.getPhoneNumber());
 		emails.add(user.getEmail());
 	}
-	
-	
-	
-	
 	
 }
