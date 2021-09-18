@@ -342,28 +342,33 @@ public class Program {
 		newUser.setUsername(input);
 		
 		//password
+		String password_input;
+		boolean password_match = false;
 		do {
 			System.out.print("\nPassword: ");
 			input = keyboard_input.nextLine();
 			
-			if(!validatePassword(input)) {
+			if(validatePassword(input)) {
+				password_input = input;
+				System.out.print("\nRe-enter password: ");
+				input = keyboard_input.nextLine();
+				if(input.equals(password_input)) {
+					password_match = true;
+					System.out.println("Password accepted.");
+				}
+				else
+					System.out.println("ERROR. Passwords do NOT match.");
+			}
+			else {
 				System.out.println("ERROR. Invalid password. Password must contain:" 
 						+ "\n-AT LEAST 8 CHARACTERS"
 						+ "\n-a SPECIAL CHARACTER" 
 						+ "\n-a NUMBER" 
 						+ "\n-a LOWERCASE letter" 
-						+ "\n-AND a CAPITAL letter");	
-			}
-			else {
-				System.out.println("Password accepted.");
+						+ "\n-AND a CAPITAL letter");
 			}
 			
-			//add *verify password* option by entering twice
-			//inside else - confirm password match, if no match re-do-while
-			//first confirms validity and second confirms security
-			
-			
-		}while(!validatePassword(input));
+		}while(!validatePassword(input) || !password_match);
 		
 		
 		//we can keep this line
