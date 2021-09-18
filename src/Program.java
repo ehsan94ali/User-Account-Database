@@ -14,12 +14,14 @@ public class Program {
 	public static void main(String[] args) {
 		
 		boolean database_online = false;
+		ArrayList<String> primaryKeys = new ArrayList<>();
 		ArrayList<String> usernames = new ArrayList<>();
 		ArrayList<String> hashes = new ArrayList<>();
 		ArrayList<String> phoneNumbers = new ArrayList<>();
 		ArrayList<String> emails = new ArrayList<>();
 		
 		File database_folder = new File("Databases");
+		File primaryKey_database = new File("Databases/primaryKey_database.xlsx");
 		File userAccount_database = new File("Databases/account_database.xlsx");
 		File username_database = new File("Databases/username_database.xlsx");
 		File hash_database = new File("Databases/hashes_database.xlsx");
@@ -30,6 +32,7 @@ public class Program {
 			database_online = true;
 		
 		create_database_folder(database_folder);
+		create_database_file(primaryKey_database);
 		create_database_file(userAccount_database);
 		create_database_file(username_database);
 		create_database_file(hash_database);
@@ -39,13 +42,15 @@ public class Program {
 		
 		try {
 			FileWriter userAccount_writer = new FileWriter(userAccount_database, true);
+			FileWriter primaryKey_writer = new FileWriter(primaryKey_database, true);
 			FileWriter username_writer = new FileWriter(username_database, true);
 			FileWriter hash_writer = new FileWriter(hash_database, true);
 			FileWriter phoneNumber_writer = new FileWriter(phoneNumber_database, true);
 			FileWriter email_writer = new FileWriter(email_database, true);
 			
 			if(!database_online) {
-				userAccount_writer.write("Username\tHash-Password\tPhone Number\tEmail Address");
+				userAccount_writer.write("Primary Key\tUsername\tHash-Password\tPhone Number\tEmail Address");
+				primaryKey_writer.write("Primary Keys");
 				username_writer.write("Usernames");
 				hash_writer.write("Hashes");
 				phoneNumber_writer.write("Phone Numbers");
@@ -54,6 +59,7 @@ public class Program {
 			}
 			else {
 				//read files and fill up local storage databases
+				fillArrayList(primaryKey_database, primaryKeys);
 				fillArrayList(username_database, usernames);
 				fillArrayList(hash_database, hashes);
 				fillArrayList(phoneNumber_database, phoneNumbers);
@@ -61,6 +67,7 @@ public class Program {
 			}
 			
 			userAccount_writer.close();
+			primaryKey_writer.close();
 			username_writer.close();
 			hash_writer.close();
 			phoneNumber_writer.close();
@@ -78,14 +85,24 @@ public class Program {
 		
 			if(user_input == 1) {
 				//create new user account
-				UserAccount newAccount = createNewUserAccount(usernames, hashes, phoneNumbers, emails);
-				addAccount_to_files(newAccount, userAccount_database, username_database, hash_database, phoneNumber_database, email_database);
+				createNewUserAccount(primaryKeys, usernames, hashes, phoneNumbers, emails);
+				//addAccount_to_files(newAccount, userAccount_database, primaryKey_database, username_database, hash_database, phoneNumber_database, email_database);
+				update_file(userAccount_database, primaryKeys, usernames, hashes, phoneNumbers, emails);
+				update_file(primaryKey_database, primaryKeys, "Primary Keys");
+				update_file(username_database, usernames, "Usernames");
+				update_file(hash_database, hashes, "Hashes");
+				update_file(phoneNumber_database, phoneNumbers, "Phone Numbers");
+				update_file(email_database, emails, "Emails");
 				
 			}
 			else if(user_input == 2) {
 				//user sign in
 				signin(usernames, hashes, hash_database, phoneNumbers, emails);
-				update_userAccount(userAccount_database, usernames, hashes, phoneNumbers, emails);
+				//only update local_database
+				
+				//only need to update files if changes have been made
+				update_file(userAccount_database, primaryKeys, usernames, hashes, phoneNumbers, emails);
+				update_file(primaryKey_database, primaryKeys, "Primary Keys");
 				update_file(username_database, usernames, "Usernames");
 				update_file(hash_database, hashes, "Hashes");
 				update_file(phoneNumber_database, phoneNumbers, "Phone Numbers");
@@ -298,16 +315,12 @@ public class Program {
 			}while(!validatePassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input));
 			
 			newHash = convertToHash(newPassword_input);
-			hashes.set(index, newHash);
-			//changePassword(userAccounts_file, hashes, hash_file, index, newHash);
-			//System.out.println("password changed, files updated.");
-			
-			
+			hashes.set(index, newHash);	
 		}
 		
 	}
 	
-	public static UserAccount createNewUserAccount(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+	public static void createNewUserAccount(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
 		UserAccount newUser = new UserAccount();
 		String input;
@@ -341,12 +354,19 @@ public class Program {
 						+ "\n-a LOWERCASE letter" 
 						+ "\n-AND a CAPITAL letter");	
 			}
-			else
+			else {
 				System.out.println("Password accepted.");
+			}
 			
 			//add *verify password* option by entering twice
+			//inside else - confirm password match, if no match re-do-while
+			//first confirms validity and second confirms security
+			
 			
 		}while(!validatePassword(input));
+		
+		
+		//we can keep this line
 		newUser.setHash(convertToHash(input));
 		
 		//phone number
@@ -379,10 +399,37 @@ public class Program {
 		}while(emails.contains(input) || !validateEmail(input));
 		newUser.setEmail(input);
 		
-		update_local_database(newUser, usernames, hashes, phoneNumbers, emails);
+		//primary key
+		input = generate_primaryKey(primaryKeys);
+		newUser.setPrimaryKey(input);
+		
+		
+		add_user_to_local_database(newUser, primaryKeys, usernames, hashes, phoneNumbers, emails);
 		System.out.println("Account SUCCESSFULLY created.");
 		
-		return newUser;
+	}
+	
+	public static String generate_primaryKey(ArrayList<String> primaryKeys) {
+		
+		String primaryKey;
+        int pk_int;
+        boolean new_pk = false;
+        
+        do {
+        primaryKey = "";
+	        for(int i = 0; i < 12; i++){
+	            do{
+	                pk_int = (int) ((Math.random() * (43)) + 48);
+	            }while(pk_int > 57 && pk_int < 65);
+	            if(i == 4 || i == 8)
+	                primaryKey += "-";
+	            primaryKey += Character.toString((char)pk_int);
+	        }
+	        if(!primaryKeys.contains(primaryKey))
+	        	new_pk = true;
+        } while(!new_pk);
+        
+		return primaryKey;
 	}
 	
 	public static boolean validateUsername(String username) {
@@ -472,7 +519,7 @@ public class Program {
 
 	public static String convertToHash(String password) {
 		//convert string using hash algorithm
-		String hash = "";
+		String hash = "\\";
         int ascii_int;
 		for(int i = 0; i < password.length(); i++) {
 		    ascii_int = (int) password.charAt(i);
@@ -482,49 +529,16 @@ public class Program {
 		    	ascii_int += 26;
 		    hash += Character.toString((char)ascii_int);
 		}
+		hash += "\\";
 		return hash;
 	}
 	
-	public static String reverseHash(String hash) {
-		//convert hash string to original string using reverse hash algorithm
-		String password = "";
-		int ascii_int;
-		for(int i = 0; i < hash.length(); i++) {
-		    ascii_int = (int) hash.charAt(i);
-		    if(ascii_int < 58)
-		    	ascii_int += 69;
-		    else
-		    	ascii_int -= 26;
-		    password += Character.toString((char)ascii_int);
-		}
-		return password;
-	}
-	
-	public static void changePassword(File userAccounts, ArrayList<String> hashes, File hash_file, int index, String newHash) {
-		
-		hashes.set(index, newHash);
-		try {
-			FileWriter userAccount_writer = new FileWriter(userAccounts);
-			FileWriter hash_writer = new FileWriter(hash_file);
-			for(int i = 0; i < index+1; i++) {
-				userAccount_writer.write("\n");
-				hash_writer.write("\n");
-			}
-			userAccount_writer.write("\t" + newHash);
-			hash_writer.write(newHash);
-			userAccount_writer.close();
-			hash_writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void update_userAccount(File userAccounts, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails){
+	public static void update_file(File userAccounts, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails){
 		try {
 			FileWriter userAccounts_writer = new FileWriter(userAccounts);
-			userAccounts_writer.write("Username\tHash-Password\tPhone Number\tEmail Address");
+			userAccounts_writer.write("Primary Key\tUsername\tHash-Password\tPhone Number\tEmail Address");
 			for(int i = 0; i < usernames.size(); i++) {
-				userAccounts_writer.write("\n" + usernames.get(i) + "\t" + hashes.get(i) + "\t" + phoneNumbers.get(i) + "\t" + emails.get(i));
+				userAccounts_writer.write("\n" + primaryKeys.get(i) + "\t" + usernames.get(i) + "\t" + hashes.get(i) + "\t" + phoneNumbers.get(i) + "\t" + emails.get(i));
 			}
 			userAccounts_writer.close();
 		} catch(IOException e) {
@@ -535,7 +549,7 @@ public class Program {
 	public static void update_file(File database_file, ArrayList<String> database, String title) {
 		try {
 			FileWriter database_writer = new FileWriter(database_file);
-			database_writer.write(title);
+			database_writer.write(title + "\t");
 			for(int i = 0; i < database.size(); i++) {
 				database_writer.write("\n" + database.get(i));
 			}
@@ -545,36 +559,13 @@ public class Program {
 		}
 	}
 	
-	public static void update_local_database(UserAccount user, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+	public static void add_user_to_local_database(UserAccount user, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		//add UserAccount object to database
+		primaryKeys.add(user.getPrimaryKey());
 		usernames.add(user.getUsername());
 		hashes.add(user.getHash());
 		phoneNumbers.add(user.getPhoneNumber());
 		emails.add(user.getEmail());
-	}
-	public static void addAccount_to_files(UserAccount user, File userAccounts, File usernames, File hashes, File phoneNumbers, File emails) {
-		try {
-			FileWriter userAccount_writer = new FileWriter(userAccounts, true);
-			FileWriter username_writer = new FileWriter(usernames, true);
-			FileWriter hash_writer = new FileWriter(hashes, true);
-			FileWriter phoneNumber_writer = new FileWriter(phoneNumbers, true);
-			FileWriter email_writer = new FileWriter(emails, true);
-			
-			userAccount_writer.write("\n" + user.getUsername() + "\t" + user.getHash() + "\t" + user.getPhoneNumber() + "\t" + user.getEmail());
-			username_writer.write("\n" + user.getUsername());
-			hash_writer.write("\n" + user.getHash());
-			phoneNumber_writer.write("\n" + user.getPhoneNumber());
-			email_writer.write("\n" + user.getEmail());
-			
-			userAccount_writer.close();
-			username_writer.close();
-			hash_writer.close();
-			phoneNumber_writer.close();
-			email_writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch  block
-			e.printStackTrace();
-		}
 	}
 	
 }
