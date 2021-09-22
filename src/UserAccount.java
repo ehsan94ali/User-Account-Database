@@ -1,12 +1,14 @@
 
 public class UserAccount {
 
+	//private variables
 	private String primaryKey;
 	private String username;
 	private String hash_password;
 	private String phoneNumber;
 	private String email;
 		
+	//default constructor
 	public UserAccount(){
 		this.primaryKey = "";
 		this.username = "";
@@ -15,6 +17,7 @@ public class UserAccount {
 		this.email = "";
 	}
 		
+	//overloaded constructor
 	public UserAccount(String primaryKey, String username, String hashpassword, String phonenumber, String email) {
 		
 		this.primaryKey = primaryKey;
@@ -24,6 +27,7 @@ public class UserAccount {
 		this.email = email;
 	}
 	
+	//set methods
 	void setPrimaryKey(String primaryKey) {
 		this.primaryKey = primaryKey;
 	}
@@ -40,6 +44,7 @@ public class UserAccount {
 		this.email = email;
 	}
 	
+	//get methods
 	String getPrimaryKey() {
 		return this.primaryKey;
 	}
@@ -55,6 +60,4 @@ public class UserAccount {
 	String getEmail() {
 		return this.email;
 	}
-	
-	
 }
