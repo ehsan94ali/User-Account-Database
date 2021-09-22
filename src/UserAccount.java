@@ -60,4 +60,12 @@ public class UserAccount {
 	String getEmail() {
 		return this.email;
 	}
+	
+	//other methods
+	boolean isEmpty() {
+		if(this.primaryKey.equals("") && this.username.equals("") && this.hash_password.equals("") && this.phoneNumber.equals("") && this.email.equals(""))
+			return true;
+		
+		return false;
+	}
 }
