@@ -90,7 +90,8 @@ public class Program {
 		
 		//declare variable for user's input
 		int user_input;
-		UserAccount current;
+		UserAccount logged_in;
+		
 		//do-while, loops until user chooses to QUIT
 		do{
 			//allows user to choose between "creating a new account", "signing in", and "quitting" or terminating the program
@@ -104,7 +105,7 @@ public class Program {
 			else if(user_input == 2) { //user sign in
 				
 				//allow user to sign in and update local database
-				current = signin(primaryKeys, usernames, hashes, phoneNumbers, emails);
+				logged_in = signin(primaryKeys, usernames, hashes, phoneNumbers, emails);
 				
 				/* CHECK TO SEE WHO IS LOGGED IN
 				System.out.print("\nprimary key logged in: " + current.getPrimaryKey());
@@ -113,6 +114,8 @@ public class Program {
 				System.out.print("\nphone number: " + current.getPhoneNumber());
 				System.out.print("\nemail: " + current.getEmail());
 				*/
+				
+				
 				
 			}
 			else { //QUIT
@@ -239,9 +242,9 @@ public class Program {
 			
 		}while(menu_input != '1' && menu_input != '2' && menu_input != '3'); //do-while, loops until user enters a valid input
 		
-		//declare variables for sign-in/forgot password
+		//declare variables for sign-in
 		int index = -1; //invalid index marker
-		String phoneNumber_input, email_input, hash;
+		String hash;
 		
 		if(menu_input == '1') { //login
 			
@@ -281,103 +284,112 @@ public class Program {
 				return empty;
 		}
 		else if(menu_input == '2') { //forgot password
-			
-			//display forgot password screen
-			System.out.println("\nForgot Password");
-			System.out.println("==============");
-			System.out.print("\nUsername: ");
-			username_input = keyboard_input.nextLine();
-			
-			//if valid username
-			if(usernames.contains(username_input)){
-				
-				index = usernames.indexOf(username_input); //get index of valid username
-				
-				//prompt user for phone number synced to account
-				System.out.print("\nPhone Number: ");
-				phoneNumber_input = keyboard_input.nextLine();
-				
-				//format phone number to check (local memory) database
-				phoneNumber_input = formatPhoneNumber(phoneNumber_input);
-				
-				//if phone number exists in database
-				if(phoneNumbers.contains(phoneNumber_input)) {
-					//if phone is not the one listed in the database synced to specific username
-					if(!phoneNumber_input.equals(phoneNumbers.get(index))) {
-						System.out.println("ERROR. Phone number '" + phoneNumber_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
-						return empty;
-					}	
-				}
-				else {
-					System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database"); //ERROR message
-					return empty;
-				}
-				
-				//prompt user for email synced to account
-				System.out.print("\nEmail: ");
-				email_input = keyboard_input.nextLine();
-				
-				//if email exists in (local memory) database
-				if(emails.contains(email_input)) {
-					//if email is not the one listed in the database synced to specific username
-					if(!email_input.equals(emails.get(index))) {
-						System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
-						return empty;
-					}
-				}
-				else {
-					System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
-					return empty;
-				}
-			}
-			else {
-				System.out.println("ERROR. Username '" + username_input + "' does NOT exist in our database."); //ERROR message
-				return empty;
-			}
-			
-			//declare variables for changing password			
-			String newPassword_input;
-			String newPassword_reenter = null;
-			String newHash;
-			
-			//do-while, loops until a valid password is entered and re-entered for security purposes
-			do {
-				System.out.println("\nChange Password");
-				System.out.println("===============");
-				System.out.print("\nNew Password: ");
-				newPassword_input = keyboard_input.nextLine();
-				
-				//if not a valid password
-				if(!validatePassword(newPassword_input)) {
-					System.out.println("ERROR. Invalid password. Password must contain:" 
-							+ "\n-AT LEAST 8 CHARACTERS"
-							+ "\n-a SPECIAL CHARACTER" 
-							+ "\n-a NUMBER" 
-							+ "\n-a LOWERCASE letter" 
-							+ "\n-AND a CAPITAL letter"); //ERROR message
-				}
-				else {
-					//re-enter password
-					System.out.print("\nRe-enter New Password: ");
-					newPassword_reenter = keyboard_input.nextLine();
-					
-					//if both passwords inputted match
-					if(newPassword_reenter.equals(newPassword_input)) {
-						newHash = convertToHash(newPassword_input); //encrypt password
-						hashes.set(index, newHash); //add hash to (local memory) database
-						System.out.println("Password SUCCESSFULLY changed."); //confirmation message
-					}
-					else
-						System.out.println("ERROR. Passwords must match."); //ERROR message
-				}
-				
-			}while(!validatePassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
-			
+		
+			forgot_password(primaryKeys, usernames, hashes, phoneNumbers, emails);
 			return empty;
+			
 		}
 		return empty;
 	}
-
+	
+	//prompts user for other credentials and grants user access to create new password
+	public static void forgot_password(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+		
+		//declare variables
+		String username_input, phoneNumber_input, email_input;
+		int index;
+		
+		//display forgot password screen
+		System.out.println("\nForgot Password");
+		System.out.println("==============");
+		System.out.print("\nUsername: ");
+		username_input = keyboard_input.nextLine();
+		
+		//if valid username
+		if(usernames.contains(username_input)){
+			
+			index = usernames.indexOf(username_input); //get index of valid username
+			
+			//prompt user for phone number synced to account
+			System.out.print("\nPhone Number: ");
+			phoneNumber_input = keyboard_input.nextLine();
+			
+			//format phone number to check (local memory) database
+			phoneNumber_input = formatPhoneNumber(phoneNumber_input);
+			
+			//if phone number exists in database
+			if(phoneNumbers.contains(phoneNumber_input)) {
+				//if phone is not the one listed in the database synced to specific username
+				if(!phoneNumber_input.equals(phoneNumbers.get(index))) {
+					System.out.println("ERROR. Phone number '" + phoneNumber_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
+					return;
+				}	
+			}
+			else {
+				System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database"); //ERROR message
+				return;
+			}
+			
+			//prompt user for email synced to account
+			System.out.print("\nEmail: ");
+			email_input = keyboard_input.nextLine();
+			
+			//if email exists in (local memory) database
+			if(emails.contains(email_input)) {
+				//if email is not the one listed in the database synced to specific username
+				if(!email_input.equals(emails.get(index))) {
+					System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
+					return;
+				}
+			}
+			else {
+				System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
+				return;
+			}
+		}
+		else {
+			System.out.println("ERROR. Username '" + username_input + "' does NOT exist in our database."); //ERROR message
+			return;
+		}
+		
+		//declare variables for changing password			
+		String newPassword_input;
+		String newPassword_reenter = null;
+		String newHash;
+		
+		//do-while, loops until a valid password is entered and re-entered for security purposes
+		do {
+			System.out.println("\nChange Password");
+			System.out.println("===============");
+			System.out.print("\nNew Password: ");
+			newPassword_input = keyboard_input.nextLine();
+			
+			//if not a valid password
+			if(!validatePassword(newPassword_input)) {
+				System.out.println("ERROR. Invalid password. Password must contain:" 
+						+ "\n-AT LEAST 8 CHARACTERS"
+						+ "\n-a SPECIAL CHARACTER" 
+						+ "\n-a NUMBER" 
+						+ "\n-a LOWERCASE letter" 
+						+ "\n-AND a CAPITAL letter"); //ERROR message
+			}
+			else {
+				//re-enter password
+				System.out.print("\nRe-enter New Password: ");
+				newPassword_reenter = keyboard_input.nextLine();
+				
+				//if both passwords inputted match
+				if(newPassword_reenter.equals(newPassword_input)) {
+					newHash = convertToHash(newPassword_input); //encrypt password
+					hashes.set(index, newHash); //add hash to (local memory) database
+					System.out.println("Password SUCCESSFULLY changed."); //confirmation message
+				}
+				else
+					System.out.println("ERROR. Passwords must match."); //ERROR message
+			}
+			
+		}while(!validatePassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
+	}
 	//create new UserAccount and add to/update (local memory) databases 
 	public static void createNewUserAccount(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
@@ -527,6 +539,8 @@ public class Program {
 	}
 
 	//check if password is valid
+	
+	//check if password is valid
 	public static boolean validatePassword(String password) {
 		/*valid password requires:
 		-minimum of 8 characters
@@ -595,6 +609,8 @@ public class Program {
 	}
 
 	//modifies phoneNumber to uniform format
+	
+	//modifies phoneNumber to uniform format
 	public static String formatPhoneNumber(String phoneNumber) {
 		
 		//initialize variable
@@ -631,6 +647,8 @@ public class Program {
         return true;
 	}
 
+	//convert password using hash algorithm
+	
 	//convert password using hash algorithm
 	public static String convertToHash(String password) {
 		
