@@ -86,9 +86,11 @@ public class Program {
 			e.printStackTrace();
 		}
 		
+		//CODE BODY/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
 		//declare variable for user's input
 		int user_input;
-		
+		UserAccount current;
 		//do-while, loops until user chooses to QUIT
 		do{
 			//allows user to choose between "creating a new account", "signing in", and "quitting" or terminating the program
@@ -102,7 +104,16 @@ public class Program {
 			else if(user_input == 2) { //user sign in
 				
 				//allow user to sign in and update local database
-				signin(usernames, hashes, hash_database, phoneNumbers, emails);
+				current = signin(primaryKeys, usernames, hashes, phoneNumbers, emails);
+				
+				/* CHECK TO SEE WHO IS LOGGED IN
+				System.out.print("\nprimary key logged in: " + current.getPrimaryKey());
+				System.out.print("\nusername: " + current.getUsername());
+				System.out.print("\nhash code: " + current.getHash());
+				System.out.print("\nphone number: " + current.getPhoneNumber());
+				System.out.print("\nemail: " + current.getEmail());
+				*/
+				
 			}
 			else { //QUIT
 				
@@ -200,12 +211,15 @@ public class Program {
 	}
 	
 	//display sign-in menu, allow user to "sign in", change password if password is forgotten, or "back" and return to the main menu
-	public static void signin(ArrayList<String> usernames, ArrayList<String> hashes, File hash_file, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+	public static UserAccount signin(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
 		//declare variables
 		char menu_input;
 		String line;
 		String username_input, password_input;
+		UserAccount logged_in;
+		UserAccount empty = new UserAccount();
+		
 		
 		//do-while, loops until user enters a valid input
 		do {
@@ -242,8 +256,10 @@ public class Program {
 			//if valid username
 			if(usernames.contains(username_input))
 				index = usernames.indexOf(username_input); //get index of username
-			else
+			else {
 				System.out.println("ERROR. Username or password is INCORRECT"); //ERROR message
+				return empty;
+			}
 			
 			hash = convertToHash(password_input); //hash user inputted password
 			
@@ -251,11 +267,18 @@ public class Program {
 			if(index >= 0) {
 				
 				//if password is correct for specific username
-				if(hash.equals(hashes.get(index)))
+				if(hash.equals(hashes.get(index))) {
+					logged_in = new UserAccount(primaryKeys.get(index), usernames.get(index), hashes.get(index), phoneNumbers.get(index), emails.get(index));
 					System.out.println("\nSuccessful login."); //confirmation message
-				else
+					return logged_in;
+				}
+				else {
 					System.out.println("ERROR. Username or password is INCORRECT"); //ERROR message
-			}			
+					return empty;
+				}
+			}
+			else
+				return empty;
 		}
 		else if(menu_input == '2') { //forgot password
 			
@@ -278,16 +301,16 @@ public class Program {
 				phoneNumber_input = formatPhoneNumber(phoneNumber_input);
 				
 				//if phone number exists in database
-				if(phoneNumberFound(phoneNumber_input, phoneNumbers)) {
+				if(phoneNumbers.contains(phoneNumber_input)) {
 					//if phone is not the one listed in the database synced to specific username
 					if(!phoneNumber_input.equals(phoneNumbers.get(index))) {
 						System.out.println("ERROR. Phone number '" + phoneNumber_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
-						return;
+						return empty;
 					}	
 				}
 				else {
 					System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database"); //ERROR message
-					return;
+					return empty;
 				}
 				
 				//prompt user for email synced to account
@@ -299,17 +322,17 @@ public class Program {
 					//if email is not the one listed in the database synced to specific username
 					if(!email_input.equals(emails.get(index))) {
 						System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
-						return;
+						return empty;
 					}
 				}
 				else {
 					System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
-					return;
+					return empty;
 				}
 			}
 			else {
 				System.out.println("ERROR. Username '" + username_input + "' does NOT exist in our database."); //ERROR message
-				return;
+				return empty;
 			}
 			
 			//declare variables for changing password			
@@ -342,14 +365,17 @@ public class Program {
 					if(newPassword_reenter.equals(newPassword_input)) {
 						newHash = convertToHash(newPassword_input); //encrypt password
 						hashes.set(index, newHash); //add hash to (local memory) database
-						System.out.println("Password accepted."); //confirmation message
+						System.out.println("Password SUCCESSFULLY changed."); //confirmation message
 					}
 					else
 						System.out.println("ERROR. Passwords must match."); //ERROR message
 				}
 				
 			}while(!validatePassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
+			
+			return empty;
 		}
+		return empty;
 	}
 
 	//create new UserAccount and add to/update (local memory) databases 
@@ -361,7 +387,6 @@ public class Program {
 		
 		System.out.println("\nCreate New Account");
 		System.out.println("==================");
-		
 		
 		//username
 		//do-while, loops until a valid and unused username is entered
@@ -422,13 +447,14 @@ public class Program {
 			//if invalid phone number
 			if(!validatePhoneNumber(input))
 				System.out.println("ERROR. Phone Number '" + input + "' is invalid. Phone number must only contain 10 digits"); //ERROR message
-			else if(phoneNumberFound(input, phoneNumbers))
+			else if(phoneNumbers.contains(formatPhoneNumber(input)))
 				System.out.println("ERROR. Phone Number '" + input + "' is already registered with another account."); //ERROR message
-			else
+			else {
 				System.out.println("Phone Number '" + input + "' is now SUCCESSFULLY linked to your account."); //confirmation message
+				input = formatPhoneNumber(input); //format phone number for (local memory) database
+			}
 			
-		}while(phoneNumberFound(input, phoneNumbers) || !validatePhoneNumber(input)); //do-while, loops until valid and unused phone number is entered
-		input = formatPhoneNumber(input); //format phone number for (local memory) database
+		}while(phoneNumbers.contains(formatPhoneNumber(input)) || !validatePhoneNumber(input)); //do-while, loops until valid and unused phone number is entered
 		newUser.setPhoneNumber(input); //assign phone number to new UserAccount
 		
 		//email address
@@ -670,4 +696,5 @@ public class Program {
 		emails.add(user.getEmail());
 	}
 	
+	//methods used for editing UserAccount variables
 }
