@@ -82,7 +82,6 @@ public class Program {
 			phoneNumber_writer.close();
 			email_writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch  block1
 			e.printStackTrace();
 		}
 		
@@ -106,7 +105,6 @@ public class Program {
 				
 				//allow user to sign in and update local database
 				logged_in = signin(primaryKeys, usernames, hashes, phoneNumbers, emails);
-				
 				/* CHECK TO SEE WHO IS LOGGED IN
 				System.out.print("\nprimary key logged in: " + current.getPrimaryKey());
 				System.out.print("\nusername: " + current.getUsername());
@@ -114,6 +112,10 @@ public class Program {
 				System.out.print("\nphone number: " + current.getPhoneNumber());
 				System.out.print("\nemail: " + current.getEmail());
 				*/
+				
+				if(!logged_in.isEmpty()) {
+					
+				}
 				
 				
 				
@@ -135,6 +137,7 @@ public class Program {
 		keyboard_input.close();
 		System.out.println("program terminated."); //confirmation message
 	}
+	
 	
 	//create database folder if it doesn't already exist
 	public static void create_database_folder(File database_folder) {
@@ -179,7 +182,6 @@ public class Program {
 			}
 			scanner.close(); //close file reading scanner
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -390,6 +392,7 @@ public class Program {
 			
 		}while(!validatePassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
 	}
+	
 	//create new UserAccount and add to/update (local memory) databases 
 	public static void createNewUserAccount(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
@@ -492,6 +495,44 @@ public class Program {
 		add_user_to_local_database(newUser, primaryKeys, usernames, hashes, phoneNumbers, emails); //adds newUser
 		System.out.println("Account SUCCESSFULLY created."); //confirmation message
 		
+	}
+	
+	//display dashboard menu, allow user to view/edit account, view/edit vehicles, and sign out (returning to the main menu)
+	public static void dashboard(UserAccount logged_in) {
+		
+		//declare variables
+		char menu_input;
+		String line;
+				
+				
+		//do-while, loops until user enters a valid input
+		do {
+			//display sign-in menu
+			System.out.println("\nDashboard");
+			System.out.println(logged_in.getUsername());
+			System.out.println("==================");
+			System.out.println("1) Edit account");
+			System.out.println("2) Edit vehicles");
+			System.out.println("3) Sign out");
+			System.out.print("User input: ");
+			line = keyboard_input.nextLine(); //take in user input with global scanner
+			menu_input = line.charAt(0); //only takes in the first character (accounts for user error of entering multiple characters)
+			
+			//if invalid input entered
+			if(menu_input != '1' && menu_input != '2' && menu_input != '3')
+				System.out.println("\nERROR. Invalid user input."); //ERROR message
+			
+		}while(menu_input != '1' && menu_input != '2' && menu_input != '3'); //do-while, loops until user enters a valid input
+		
+		if(menu_input == '1') { //Edit account
+			//editAccount(logged_in);
+			
+		}
+		else if(menu_input == '2') { //Edit vehicles
+			//editVehicles(logged_in);
+		}
+		
+				
 	}
 	
 	//creates new and unique primary key
@@ -609,7 +650,7 @@ public class Program {
 	}
 
 	//modifies phoneNumber to uniform format
-	
+	 
 	//modifies phoneNumber to uniform format
 	public static String formatPhoneNumber(String phoneNumber) {
 		
