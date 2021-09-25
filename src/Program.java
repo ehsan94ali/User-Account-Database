@@ -114,7 +114,7 @@ public class Program {
 				*/
 				
 				if(!logged_in.isEmpty()) {
-					
+					dashboard(logged_in);
 				}
 				
 				
@@ -505,34 +505,36 @@ public class Program {
 		String line;
 				
 				
-		//do-while, loops until user enters a valid input
+		//do-while, loops until user signs out
 		do {
-			//display sign-in menu
-			System.out.println("\nDashboard");
-			System.out.println(logged_in.getUsername());
-			System.out.println("==================");
-			System.out.println("1) Edit account");
-			System.out.println("2) Edit vehicles");
-			System.out.println("3) Sign out");
-			System.out.print("User input: ");
-			line = keyboard_input.nextLine(); //take in user input with global scanner
-			menu_input = line.charAt(0); //only takes in the first character (accounts for user error of entering multiple characters)
-			
-			//if invalid input entered
-			if(menu_input != '1' && menu_input != '2' && menu_input != '3')
-				System.out.println("\nERROR. Invalid user input."); //ERROR message
-			
-		}while(menu_input != '1' && menu_input != '2' && menu_input != '3'); //do-while, loops until user enters a valid input
-		
-		if(menu_input == '1') { //Edit account
-			//editAccount(logged_in);
-			
-		}
-		else if(menu_input == '2') { //Edit vehicles
-			//editVehicles(logged_in);
-		}
-		
+			//do-while, loops until user enters a valid input
+			do {
+				//display sign-in menu
+				System.out.println("\nDashboard");
+				System.out.println(logged_in.getUsername());
+				System.out.println("==================");
+				System.out.println("1) Edit account");
+				System.out.println("2) Edit vehicles");
+				System.out.println("3) Sign out");
+				System.out.print("User input: ");
+				line = keyboard_input.nextLine(); //take in user input with global scanner
+				menu_input = line.charAt(0); //only takes in the first character (accounts for user error of entering multiple characters)
 				
+				//if invalid input entered
+				if(menu_input != '1' && menu_input != '2' && menu_input != '3')
+					System.out.println("\nERROR. Invalid user input."); //ERROR message
+				
+			}while(menu_input != '1' && menu_input != '2' && menu_input != '3'); //do-while, loops until user enters a valid input
+			
+			if(menu_input == '1') { //Edit account
+				//editAccount(logged_in);
+				
+			}
+			else if(menu_input == '2') { //Edit vehicles
+				//editVehicles(logged_in);
+				
+			}
+		}while(menu_input != '3'); //do-while, loops until user signs out
 	}
 	
 	//creates new and unique primary key
