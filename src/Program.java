@@ -492,7 +492,7 @@ public class Program {
 		input = generate_primaryKey(primaryKeys); //create new and unique primary key
 		newUser.setPrimaryKey(input); //assigns primary key to new UserAccount
 		
-		add_user_to_local_database(newUser, primaryKeys, usernames, hashes, phoneNumbers, emails); //adds newUser
+		update_local_database(newUser, primaryKeys, usernames, hashes, phoneNumbers, emails); //adds newUser
 		System.out.println("Account SUCCESSFULLY created."); //confirmation message
 		
 	}
@@ -650,7 +650,7 @@ public class Program {
 	}
 
 	//modifies phoneNumber to uniform format
-	 
+	
 	//modifies phoneNumber to uniform format
 	public static String formatPhoneNumber(String phoneNumber) {
 		
@@ -745,14 +745,27 @@ public class Program {
 		}
 	}
 	
-	//add new UserAccount to (local memory) databases
-	public static void add_user_to_local_database(UserAccount user, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+	//add new/update current UserAccount to (local memory) databases
+	public static void update_local_database(UserAccount user, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
-		primaryKeys.add(user.getPrimaryKey());
-		usernames.add(user.getUsername());
-		hashes.add(user.getHash());
-		phoneNumbers.add(user.getPhoneNumber());
-		emails.add(user.getEmail());
+		if(primaryKeys.contains(user.getPrimaryKey())) {
+			//user already exists in database, updates need to made
+			
+			int index = primaryKeys.indexOf(user.getPrimaryKey());
+			
+			usernames.set(index, user.getUsername());
+			hashes.set(index, user.getHash());
+			phoneNumbers.set(index, user.getPhoneNumber());
+			emails.set(index, user.getEmail());
+		}
+		else {
+			//new user needs to be added to databases
+			primaryKeys.add(user.getPrimaryKey());
+			usernames.add(user.getUsername());
+			hashes.add(user.getHash());
+			phoneNumbers.add(user.getPhoneNumber());
+			emails.add(user.getEmail());
+		}
 	}
 	
 	//methods used for editing UserAccount variables
