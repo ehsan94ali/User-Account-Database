@@ -28,44 +28,52 @@ public class UserAccount {
 	}
 	
 	//set methods
-	void setPrimaryKey(String primaryKey) {
+	public void setPrimaryKey(String primaryKey) {
 		this.primaryKey = primaryKey;
 	}
-	void setUsername(String username) {
+	public void setUsername(String username) {
 		this.username = username;
 	}
-	void setHash(String hashpassword) {
+	public void setHash(String hashpassword) {
 		this.hash_password = hashpassword;
 	}
-	void setPhoneNumber(String phonenumber) {
+	public void setPhoneNumber(String phonenumber) {
 		this.phoneNumber = phonenumber;
 	}
-	void setEmail(String email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 	
 	//get methods
-	String getPrimaryKey() {
+	public String getPrimaryKey() {
 		return this.primaryKey;
 	}
-	String getUsername() {
+	public String getUsername() {
 		return this.username;
 	}
-	String getHash() {
+	public String getHash() {
 		return this.hash_password;
 	}
-	String getPhoneNumber() {
+	public String getPhoneNumber() {
 		return this.phoneNumber;
 	}
-	String getEmail() {
+	public String getEmail() {
 		return this.email;
 	}
 	
 	//other methods
-	boolean isEmpty() {
+	public boolean isEmpty() {
 		if(this.primaryKey.equals("") && this.username.equals("") && this.hash_password.equals("") && this.phoneNumber.equals("") && this.email.equals(""))
 			return true;
 		
 		return false;
 	}
+	public String toString(){
+        return "User account credentials"
+        + "\n========================"
+        + "\nUsername: " + this.username
+        + "\nPhone Number: " + this.phoneNumber
+        + "\nEmail: " + this.email;
+    }
+	
 }
