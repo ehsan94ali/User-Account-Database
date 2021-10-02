@@ -114,7 +114,7 @@ public class Program {
 				*/
 				
 				if(!logged_in.isEmpty()) {
-					dashboard(logged_in);
+					dashboard(logged_in, primaryKeys, usernames, hashes, phoneNumbers, emails);
 				}
 				
 				
@@ -498,7 +498,7 @@ public class Program {
 	}
 	
 	//display dashboard menu, allow user to view/edit account, view/edit vehicles, and sign out (returning to the main menu)
-	public static void dashboard(UserAccount logged_in) {
+	public static void dashboard(UserAccount logged_in, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
 		//declare variables
 		char menu_input;
@@ -770,5 +770,57 @@ public class Program {
 		}
 	}
 	
-	//methods used for editing UserAccount variables
+	//view/edit UserAccount credentials
+	public static void editAccount(UserAccount user, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+		
+		String line;
+		char menu_input;
+		
+		//do-while, loops until user enters a valid input
+		do {
+			//display current credentials
+			System.out.println(user);
+			
+			//display menu
+			System.out.println("\nWhich credential would you like to change?");
+			System.out.println("1) Username");
+			System.out.println("2) Password");
+			System.out.println("3) Phone Number");
+			System.out.println("4) Email");
+			System.out.println("5) Back");
+			System.out.print("User input: ");
+			line = keyboard_input.nextLine(); //take in user input with global scanner
+			menu_input = line.charAt(0); //only takes in the first character (accounts for user error of entering multiple characters)
+			
+			//if invalid input entered
+			if(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4' && menu_input != '5')
+				System.out.println("\nERROR. Invalid user input."); //ERROR message
+			
+		}while(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4' && menu_input != '5'); //do-while, loops until user enters a valid input
+		
+		switch(menu_input) {
+			case '1':
+				//edit username
+				
+				break;
+			case '2':
+				//edit password
+				
+				break;
+			case '3':
+				//edit phone number
+				
+				break;
+			case '4':
+				//edit email
+				
+				break;
+			case '5':
+				//back
+				
+				break;
+			default:
+				//error message
+		}
+	}
 }
