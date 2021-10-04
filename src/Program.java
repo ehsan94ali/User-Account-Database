@@ -367,7 +367,7 @@ public class Program {
 			newPassword_input = keyboard_input.nextLine();
 			
 			//if not a valid password
-			if(!validatePassword(newPassword_input)) {
+			if(!validPassword(newPassword_input)) {
 				System.out.println("ERROR. Invalid password. Password must contain:" 
 						+ "\n-AT LEAST 8 CHARACTERS"
 						+ "\n-a SPECIAL CHARACTER" 
@@ -390,7 +390,7 @@ public class Program {
 					System.out.println("ERROR. Passwords must match."); //ERROR message
 			}
 			
-		}while(!validatePassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
+		}while(!validPassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
 	}
 	
 	//create new UserAccount and add to/update (local memory) databases 
@@ -410,13 +410,13 @@ public class Program {
 			input = keyboard_input.nextLine();
 			
 			//if invalid username
-			if(!validateUsername(input))
+			if(!validUsername(input))
 				System.out.println("ERROR. Username '" + input + "' is INVALID. Username CANNOT contain spaces"); //ERROR message
 			else if(usernames.contains(input)) //if username is already in use
 				System.out.println("ERROR. Username '" + input + "' already exists."); //ERROR message
 			else
 				System.out.println("Username '" + input + "' is VALID and available."); //confirmation message
-		}while(usernames.contains(input) || !validateUsername(input)); //do-while, loops until a valid and unused username is entered
+		}while(usernames.contains(input) || !validUsername(input)); //do-while, loops until a valid and unused username is entered
 		newUser.setUsername(input); //assign username to new UserAccount
 		
 		//password
@@ -427,8 +427,8 @@ public class Program {
 			System.out.print("\nPassword: ");
 			input = keyboard_input.nextLine();
 			
-			//if valid pasword
-			if(validatePassword(input)) {
+			//if valid password
+			if(validPassword(input)) {
 				password_input = input;
 				System.out.print("\nRe-enter password: ");
 				input = keyboard_input.nextLine();
@@ -450,7 +450,7 @@ public class Program {
 						+ "\n-AND a CAPITAL letter"); //ERROR message
 			}
 			
-		}while(!validatePassword(input) || !password_match); //do-while, loops until a valid password is entered and reentered
+		}while(!validPassword(input) || !password_match); //do-while, loops until a valid password is entered and reentered
 		newUser.setHash(convertToHash(input)); //assign hash-password to new UserAccount
 		
 		//phone number
@@ -460,7 +460,7 @@ public class Program {
 			input = keyboard_input.nextLine();
 			
 			//if invalid phone number
-			if(!validatePhoneNumber(input))
+			if(!validPhoneNumber(input))
 				System.out.println("ERROR. Phone Number '" + input + "' is invalid. Phone number must only contain 10 digits"); //ERROR message
 			else if(phoneNumbers.contains(formatPhoneNumber(input)))
 				System.out.println("ERROR. Phone Number '" + input + "' is already registered with another account."); //ERROR message
@@ -469,7 +469,7 @@ public class Program {
 				input = formatPhoneNumber(input); //format phone number for (local memory) database
 			}
 			
-		}while(phoneNumbers.contains(formatPhoneNumber(input)) || !validatePhoneNumber(input)); //do-while, loops until valid and unused phone number is entered
+		}while(phoneNumbers.contains(formatPhoneNumber(input)) || !validPhoneNumber(input)); //do-while, loops until valid and unused phone number is entered
 		newUser.setPhoneNumber(input); //assign phone number to new UserAccount
 		
 		//email address
@@ -479,13 +479,13 @@ public class Program {
 			input = keyboard_input.nextLine();
 			
 			//if invalid email
-			if(!validateEmail(input))
+			if(!validEmail(input))
 				System.out.println("ERROR. Email Address '" + input + "' is an INVALID email address."); //ERROR message
 			else if(emails.contains(input))
 				System.out.println("ERROR. Email Address '" + input + "' is already registered with another account."); //ERROR message
 			else
 				System.out.println("Email Address '" + input + "' is now SUCCESSFULLY linked to your account."); //confirmation message
-		}while(emails.contains(input) || !validateEmail(input));
+		}while(emails.contains(input) || !validEmail(input));
 		newUser.setEmail(input); //assign email to new UserAccount
 		
 		//primary key
@@ -527,8 +527,7 @@ public class Program {
 			}while(menu_input != '1' && menu_input != '2' && menu_input != '3'); //do-while, loops until user enters a valid input
 			
 			if(menu_input == '1') { //Edit account
-				//editAccount(logged_in);
-				
+				editAccount(logged_in, primaryKeys, usernames, hashes, phoneNumbers, emails);
 			}
 			else if(menu_input == '2') { //Edit vehicles
 				//editVehicles(logged_in);
@@ -573,7 +572,7 @@ public class Program {
 	}
 	
 	//check if username is valid
-	public static boolean validateUsername(String username) {
+	public static boolean validUsername(String username) {
 		//valid username CANNOT contain any spaces
 		if(username.contains(" "))
 			return false;
@@ -584,7 +583,7 @@ public class Program {
 	//check if password is valid
 	
 	//check if password is valid
-	public static boolean validatePassword(String password) {
+	public static boolean validPassword(String password) {
 		/*valid password requires:
 		-minimum of 8 characters
 		-at least one special character
@@ -621,7 +620,7 @@ public class Program {
 	}
 	
 	//check if phone number is valid
-	public static boolean validatePhoneNumber(String phoneNumber) {
+	public static boolean validPhoneNumber(String phoneNumber) {
 		//valid phone number contains 10 digits
 		
 		//if phone number is over 14 characters
@@ -677,7 +676,7 @@ public class Program {
 	}
 	
 	//check if email is valid
-	public static boolean validateEmail(String email) {
+	public static boolean validEmail(String email) {
 		
 		//initialize variables
 		Pattern pattern = Pattern.compile("[\\w.]+@\\w+\\.(com|net|gov|edu|org|ai|io)", Pattern.CASE_INSENSITIVE);
@@ -775,6 +774,7 @@ public class Program {
 		
 		String line;
 		char menu_input;
+		boolean changesMade = false;
 		
 		//do-while, loops until user enters a valid input
 		do {
@@ -801,18 +801,139 @@ public class Program {
 		switch(menu_input) {
 			case '1':
 				//edit username
+				//do-while, loops until either current username is entered or a valid + unused username is entered
+				do {
+					System.out.println("Change username====================================================");
+					System.out.println("*re-enter current username if you would like NO CHANGES to be made.");
+					System.out.println("Current username: " + user.getUsername());
+					System.out.print("New username: ");
+					line = keyboard_input.nextLine();
+					
+					//if current username entered
+					if(line.equals(user.getUsername())) {
+						changesMade = false;
+						System.out.println("Usernames match. NO CHANGES were made.");
+						break;
+					}
+					else {
+						changesMade = true;
+						if(!validUsername(line))
+							System.out.println("ERROR. Username '" + line + "' is INVALID. Username CANNOT contain spaces"); //ERROR message
+						else if(usernames.contains(line)) //if username is already in use
+							System.out.println("ERROR. Username '" + line + "' already exists."); //ERROR message
+						else
+							System.out.println("Username '" + line + "' is VALID and available."); //confirmation message
+					}	
+				}while(!changesMade || usernames.contains(line) || !validUsername(line));//do-while, loops until either current username is entered or a valid + unused username is entered
+				user.setUsername(line); //assign new username to UserAccount
+				
 				
 				break;
 			case '2':
 				//edit password
+				System.out.println("Change password====================================================");
+				System.out.print("\nCurrent password: ");
+				line = keyboard_input.nextLine();
+				
+				if(!convertToHash(line).equals(user.getHash()))
+					break;
+				
+				String password_input;
+				boolean password_match = false;
+				//do-while, loops until a valid password is entered and reentered
+				do {
+					System.out.println("*re-enter current password if you would like NO CHANGES to be made.");
+					System.out.print("New password: ");
+					line = keyboard_input.nextLine();
+					
+					//if current password entered
+					if(convertToHash(line).equals(user.getHash())) {
+						changesMade = false;
+						System.out.println("Passwords match. NO CHANGES were made.");
+						break;
+					}
+					else if(validPassword(line)) {
+						password_input = line;
+						System.out.print("\nRe-enter new password: ");
+						line = keyboard_input.nextLine();
+						
+						//if reentered password matches initial input
+						if(line.equals(password_input)) {
+							password_match = true; //handle flag
+							System.out.println("Password accepted."); //confirmation message
+						}
+						else
+							System.out.println("ERROR. Passwords do NOT match."); //ERROR message
+					}
+					else {
+						System.out.println("ERROR. Invalid password. Password must contain:" 
+								+ "\n-AT LEAST 8 CHARACTERS"
+								+ "\n-a SPECIAL CHARACTER" 
+								+ "\n-a NUMBER" 
+								+ "\n-a LOWERCASE letter" 
+								+ "\n-AND a CAPITAL letter"); //ERROR message
+					}
+					
+				}while(!validPassword(line) || !password_match); //do-while, loops until a valid password is entered and reentered
+				user.setHash(convertToHash(line)); //assign new hash-password to UserAccount
 				
 				break;
 			case '3':
 				//edit phone number
-				
+				//do-while, loops until valid and unused phone number is entered
+				do {
+					System.out.println("Change phone number====================================================");
+					System.out.println("*re-enter current phone number if you would like NO CHANGES to be made.");
+					System.out.println("Current phone number: " + user.getPhoneNumber());
+					System.out.print("New phone number: ");
+					line = keyboard_input.nextLine();
+					
+					//if invalid phone number
+					if(!validPhoneNumber(line))
+						System.out.println("ERROR. Phone Number '" + line + "' is invalid. Phone number must only contain 10 digits"); //ERROR message
+					else if(formatPhoneNumber(line).equals(user.getPhoneNumber())) {
+						changesMade = false;
+						System.out.println("Phone numbers  match. NO CHANGES were made.");
+						break;
+					}
+					else if(phoneNumbers.contains(formatPhoneNumber(line)))
+						System.out.println("ERROR. Phone Number '" + line + "' is already registered with another account."); //ERROR message
+					else {
+						changesMade = true;
+						System.out.println("Phone Number '" + line + "' is now SUCCESSFULLY linked to your account."); //confirmation message
+						line = formatPhoneNumber(line); //format phone number for (local memory) database
+					}
+				}while(!changesMade || phoneNumbers.contains(formatPhoneNumber(line)) || !validPhoneNumber(line)); //do-while, loops until valid and unused phone number is entered
+				user.setPhoneNumber(line); //assign new phone number to UserAccount
+								
 				break;
 			case '4':
 				//edit email
+				//do-while, loops until valid and unused email is entered
+				do {
+					System.out.println("Change email====================================================");
+					System.out.println("*re-enter current email if you would like NO CHANGES to be made.");
+					System.out.println("Current email: " + user.getEmail());
+					System.out.print("New email: ");
+					line = keyboard_input.nextLine();
+					
+					//if current username entered
+					if(line.equals(user.getEmail())) {
+						changesMade = false;
+						System.out.println("Emails match. NO CHANGES were made.");
+						break;
+					}
+					else {
+						changesMade = true;
+						if(!validEmail(line))
+							System.out.println("ERROR. Email Address '" + line + "' is an INVALID email address."); //ERROR message
+						else if(emails.contains(line))
+							System.out.println("ERROR. Email Address '" + line + "' is already registered with another account."); //ERROR message
+						else
+							System.out.println("Email Address '" + line + "' is now SUCCESSFULLY linked to your account."); //confirmation message
+					}
+				}while(emails.contains(line) || !validEmail(line));
+				user.setEmail(line); //assign new email to UserAccount
 				
 				break;
 			case '5':
@@ -820,7 +941,9 @@ public class Program {
 				
 				break;
 			default:
-				//error message
+				System.out.println("ERROR. Invalid user input entered."); //ERROR message
 		}
+		//update existing account in database
+		update_local_database(user, primaryKeys, usernames, hashes, phoneNumbers, emails);
 	}
 }
