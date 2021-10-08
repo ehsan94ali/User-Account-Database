@@ -68,6 +68,18 @@ public class UserAccount {
 		
 		return false;
 	}
+	public void setToDelete() {
+		this.setUsername("");
+		this.setHash("");
+		this.setPhoneNumber("");
+		this.setEmail("");
+	}
+	public boolean toBeDeleted() {
+		if(this.username.equals("") && this.hash_password.equals("") && this.phoneNumber.equals("") && this.email.equals(""))
+			return true;
+		
+		return false;
+	}
 	public String toString(){
         return "User account credentials"
         + "\n========================"
