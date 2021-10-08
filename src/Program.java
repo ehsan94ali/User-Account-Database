@@ -748,13 +748,24 @@ public class Program {
 			
 			int index = primaryKeys.indexOf(user.getPrimaryKey());
 			
-			usernames.set(index, user.getUsername());
-			hashes.set(index, user.getHash());
-			phoneNumbers.set(index, user.getPhoneNumber());
-			emails.set(index, user.getEmail());
+			if(user.toBeDeleted()) {
+				//remove user from database
+				primaryKeys.remove(index);
+				usernames.remove(index);
+				hashes.remove(index);
+				phoneNumbers.remove(index);
+				emails.remove(index);
+			}
+			else {
+				//edit user already in database
+				usernames.set(index, user.getUsername());
+				hashes.set(index, user.getHash());
+				phoneNumbers.set(index, user.getPhoneNumber());
+				emails.set(index, user.getEmail());
+			}
 		}
 		else {
-			//new user needs to be added to databases
+			//new user needs to be added to database
 			primaryKeys.add(user.getPrimaryKey());
 			usernames.add(user.getUsername());
 			hashes.add(user.getHash());
@@ -781,16 +792,17 @@ public class Program {
 			System.out.println("2) Password");
 			System.out.println("3) Phone Number");
 			System.out.println("4) Email");
-			System.out.println("5) Back");
+			System.out.println("5) DELETE ACCOUNT");
+			System.out.println("6) Back");
 			System.out.print("User input: ");
 			line = keyboard_input.nextLine(); //take in user input with global scanner
 			menu_input = line.charAt(0); //only takes in the first character (accounts for user error of entering multiple characters)
 			
 			//if invalid input entered
-			if(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4' && menu_input != '5')
+			if(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4' && menu_input != '5' && menu_input != '6')
 				System.out.println("\nERROR. Invalid user input."); //ERROR message
 			
-		}while(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4' && menu_input != '5'); //do-while, loops until user enters a valid input
+		}while(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4' && menu_input != '5' && menu_input != '6'); //do-while, loops until user enters a valid input
 		
 		switch(menu_input) {
 			case '1':
@@ -818,7 +830,7 @@ public class Program {
 						else
 							System.out.println("Username '" + line + "' is VALID and available."); //confirmation message
 					}	
-				}while(!changesMade || usernames.contains(line.toLowerCase()) || !validUsername(line));//do-while, loops until either current username is entered or a valid + unused username is entered
+				}while(!changesMade || usernames.contains(line.toLowerCase()) || !validUsername(line)); //do-while, loops until either current username is entered or a valid + unused username is entered
 				user.setUsername(line.toLowerCase()); //assign new username to UserAccount
 				
 				break;
@@ -828,6 +840,7 @@ public class Program {
 				System.out.print("\nCurrent password: ");
 				line = keyboard_input.nextLine();
 				
+				//if incorrect password entered
 				if(!convertToHash(line).equals(user.getHash()))
 					break;
 				
@@ -925,13 +938,47 @@ public class Program {
 						else
 							System.out.println("Email Address '" + line + "' is now SUCCESSFULLY linked to your account."); //confirmation message
 					}
-				}while(emails.contains(line.toLowerCase()) || !validEmail(line));
+				}while(emails.contains(line.toLowerCase()) || !validEmail(line)); //do-while, loops until valid and unused email is entered
 				user.setEmail(line.toLowerCase()); //assign new email to UserAccount
 				
 				break;
 			case '5':
-				//back
+				//DELETE ACCOUNT
+				System.out.println("\nDELETE ACCOUNT====================================================");
+				System.out.print("Please re-enter password to move forward: ");
+				line = keyboard_input.nextLine();
 				
+				
+				//if incorrect password entered
+				if(!convertToHash(line).equals(user.getHash())) {
+					System.out.println("ERROR. Incorrect password entered."); //ERROR message
+					break;
+				}
+				
+				char confirmation;
+				//do-while, loops until a valid user input is entered
+				do {
+					System.out.print("Are you sure you want to DELETE your account (y/n): ");
+					line = keyboard_input.nextLine();
+					
+					
+					//only takes in the first character
+					//(accounts for user error of entering multiple characters)
+					//AND ignores case (user can type case-insensitive(Y, y, N, n, Yes, yes, No, no))
+					confirmation = Character.toLowerCase(line.charAt(0));
+					
+					
+					//if user would like to delete their account
+					if(confirmation == 'y')
+						user.setToDelete();
+					else if(confirmation != 'n')
+						System.out.println("ERROR. '" + confirmation + "' is an INVALID input. Please try again."); //ERROR message
+					
+				}while(confirmation != 'y' && confirmation != 'n'); //do-while, loops until a valid user input is entered
+				
+				break;
+			case '6':
+				//back
 				break;
 			default:
 				System.out.println("ERROR. Invalid user input entered."); //ERROR message
@@ -939,4 +986,5 @@ public class Program {
 		//update existing account in database
 		update_local_database(user, primaryKeys, usernames, hashes, phoneNumbers, emails);
 	}
+	
 }
