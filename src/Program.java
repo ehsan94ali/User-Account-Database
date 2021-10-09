@@ -528,6 +528,8 @@ public class Program {
 			
 			if(menu_input == '1') { //Edit account
 				editAccount(logged_in, primaryKeys, usernames, hashes, phoneNumbers, emails);
+				if(logged_in.toBeDeleted())
+					menu_input = '3';
 			}
 			else if(menu_input == '2') { //Edit vehicles
 				//editVehicles(logged_in);
