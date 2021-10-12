@@ -81,7 +81,7 @@ public class UserAccount {
 		return false;
 	}
 	public String toString(){
-        return "User account credentials"
+        return "\n\nUser account credentials"
         + "\n========================"
         + "\nUsername: " + this.username
         + "\nPhone Number: " + this.phoneNumber

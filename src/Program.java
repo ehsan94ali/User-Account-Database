@@ -105,19 +105,9 @@ public class Program {
 				
 				//allow user to sign in and update local database
 				logged_in = signin(primaryKeys, usernames, hashes, phoneNumbers, emails);
-				/* CHECK TO SEE WHO IS LOGGED IN
-				System.out.print("\nprimary key logged in: " + current.getPrimaryKey());
-				System.out.print("\nusername: " + current.getUsername());
-				System.out.print("\nhash code: " + current.getHash());
-				System.out.print("\nphone number: " + current.getPhoneNumber());
-				System.out.print("\nemail: " + current.getEmail());
-				*/
 				
-				if(!logged_in.isEmpty()) {
+				if(!logged_in.isEmpty())
 					dashboard(logged_in, primaryKeys, usernames, hashes, phoneNumbers, emails);
-				}
-				
-				
 				
 			}
 			else { //QUIT
@@ -131,7 +121,6 @@ public class Program {
 				update_file(email_database, emails, "Emails");
 			}
 		}while(user_input != 3); //do-while, loops until user chooses to QUIT
-		
 		
 		//close user input scanner
 		keyboard_input.close();
@@ -286,10 +275,8 @@ public class Program {
 				return empty;
 		}
 		else if(menu_input == '2') { //forgot password
-		
 			forgot_password(primaryKeys, usernames, hashes, phoneNumbers, emails);
 			return empty;
-			
 		}
 		return empty;
 	}
