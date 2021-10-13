@@ -679,20 +679,20 @@ public class Program {
 		
 		//declare and initialize variables
 		String hash = "\\"; //start hash with two backslashes
-        int ascii_int;
-        
-        //for loop through every character in password
-        for(char c : password.toCharArray()) {
-        	ascii_int = (int) c;
-        	if(ascii_int > 100)
-        		ascii_int -= 69;
-        	else
-        		ascii_int += 26;
-        	hash += Character.toString((char) ascii_int);
-        }
-        
-		hash += "\\"; //end hash with two backslashes
-		return hash; //return hashed password as string
+		int ascii_int;
+
+		//for loop through every character in password
+		for(char c : password.toCharArray()) {
+			ascii_int = (int) c;
+			if(ascii_int > 100)
+				ascii_int -= 69;
+			else
+				ascii_int += 26;
+			hash += Character.toString((char) ascii_int);
+		}
+
+			hash += "\\"; //end hash with two backslashes
+			return hash; //return hashed password as string
 	}
 	
 	//(overloaded) update file, specifically for master file with ALL user credentials
@@ -974,6 +974,28 @@ public class Program {
 		}
 		//update existing account in database
 		update_local_database(user, primaryKeys, usernames, hashes, phoneNumbers, emails);
+	}
+	
+	//STILL NEEDS WORK!!============================================================================================================================================
+	//start working on encryption method to handle all unique data instance fields of UserAccount
+	public static String encrypt(String data) {
+		
+		//declare and initialize variables
+		String encrypted = "\\"; //start hash with two backslashes
+		int ascii_int;
+
+		//for loop through every character in password
+		for(char c : data.toCharArray()) {
+			ascii_int = (int) c;
+			if(ascii_int > 100)
+				ascii_int -= 69;
+			else
+				ascii_int += 26;
+			encrypted += Character.toString((char) ascii_int);
+		}
+
+			encrypted += "\\"; //end hash with two backslashes
+			return encrypted; //return hashed password as string
 	}
 	
 }
