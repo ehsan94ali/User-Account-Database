@@ -255,7 +255,7 @@ public class Program {
 				return empty;
 			}
 			
-			hash = convertToHash(password_input); //hash user inputted password
+			hash = encrypt(password_input); //hash user inputted password
 			
 			//if username was found in (local) database
 			if(index >= 0) {
@@ -369,7 +369,7 @@ public class Program {
 				
 				//if both passwords inputted match
 				if(newPassword_reenter.equals(newPassword_input)) {
-					newHash = convertToHash(newPassword_input); //encrypt password
+					newHash = encrypt(newPassword_input); //encrypt password
 					hashes.set(index, newHash); //add hash to (local memory) database
 					System.out.println("Password SUCCESSFULLY changed."); //confirmation message
 				}
@@ -438,7 +438,7 @@ public class Program {
 			}
 			
 		}while(!validPassword(input) || !password_match); //do-while, loops until a valid password is entered and reentered
-		newUser.setHash(convertToHash(input)); //assign hash-password to new UserAccount
+		newUser.setHash(encrypt(input)); //assign hash-password to new UserAccount
 		
 		//phone number
 		//do-while, loops until valid and unused phone number is entered
@@ -674,25 +674,37 @@ public class Program {
         return true;
 	}
 	
-	//convert password using hash algorithm
-	public static String convertToHash(String password) {
+	//encrypt all unique data using hash algorithm
+	public static String encrypt(String data, String field) {
 		
 		//declare and initialize variables
-		String hash = "\\"; //start hash with two backslashes
+		String encrypted = "\\"; //start hash with two backslashes
 		int ascii_int;
 
-		//for loop through every character in password
-		for(char c : password.toCharArray()) {
-			ascii_int = (int) c;
-			if(ascii_int > 100)
-				ascii_int -= 69;
-			else
-				ascii_int += 26;
-			hash += Character.toString((char) ascii_int);
+		switch(field){
+			case "USERNAME":
+				
+				break;
+			case "PASSWORD":
+				//for loop through every character in password
+				for(char c : data.toCharArray()) {
+					ascii_int = (int) c;
+					if(ascii_int > 100)
+						ascii_int -= 69;
+					else
+						ascii_int += 26;
+					encrypted += Character.toString((char) ascii_int);
+				}
+				break;
+			case "PHONE_NUMBER":
+				break;
+			case "EMAIL":
+				break;
+			default:
 		}
 
-			hash += "\\"; //end hash with two backslashes
-			return hash; //return hashed password as string
+		encrypted += "\\"; //end hash with two backslashes
+		return encrypted; //return hashed data as string
 	}
 	
 	//(overloaded) update file, specifically for master file with ALL user credentials
@@ -830,7 +842,7 @@ public class Program {
 				line = keyboard_input.nextLine();
 				
 				//if incorrect password entered
-				if(!convertToHash(line).equals(user.getHash()))
+				if(!encrypt(line).equals(user.getHash()))
 					break;
 				
 				String password_input;
@@ -842,7 +854,7 @@ public class Program {
 					line = keyboard_input.nextLine();
 					
 					//if current password entered
-					if(convertToHash(line).equals(user.getHash())) {
+					if(encrypt(line).equals(user.getHash())) {
 						changesMade = false;
 						System.out.println("Passwords match. NO CHANGES were made.");
 						break;
@@ -870,7 +882,7 @@ public class Program {
 					}
 					
 				}while(!validPassword(line) || !password_match); //do-while, loops until a valid password is entered and reentered
-				user.setHash(convertToHash(line)); //assign new hash-password to UserAccount
+				user.setHash(encrypt(line)); //assign new hash-password to UserAccount
 				
 				break;
 			case '3':
@@ -939,7 +951,7 @@ public class Program {
 				
 				
 				//if incorrect password entered
-				if(!convertToHash(line).equals(user.getHash())) {
+				if(!encrypt(line).equals(user.getHash())) {
 					System.out.println("ERROR. Incorrect password entered."); //ERROR message
 					break;
 				}
@@ -974,28 +986,6 @@ public class Program {
 		}
 		//update existing account in database
 		update_local_database(user, primaryKeys, usernames, hashes, phoneNumbers, emails);
-	}
-	
-	//STILL NEEDS WORK!!============================================================================================================================================
-	//start working on encryption method to handle all unique data instance fields of UserAccount
-	public static String encrypt(String data) {
-		
-		//declare and initialize variables
-		String encrypted = "\\"; //start hash with two backslashes
-		int ascii_int;
-
-		//for loop through every character in password
-		for(char c : data.toCharArray()) {
-			ascii_int = (int) c;
-			if(ascii_int > 100)
-				ascii_int -= 69;
-			else
-				ascii_int += 26;
-			encrypted += Character.toString((char) ascii_int);
-		}
-
-			encrypted += "\\"; //end hash with two backslashes
-			return encrypted; //return hashed password as string
 	}
 	
 }
