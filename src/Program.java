@@ -678,30 +678,61 @@ public class Program {
 	public static String encrypt(String data, String field) {
 		
 		//declare and initialize variables
-		String encrypted = "\\"; //start hash with two backslashes
+		String encrypted = "";
 		int ascii_int;
 
-		switch(field){
-			case "USERNAME":
-				
-				break;
-			case "PASSWORD":
-				//for loop through every character in password
-				for(char c : data.toCharArray()) {
-					ascii_int = (int) c;
+		//start hash with two backslashes UNLESS it's an email
+		if(!field.equals("EMAIL"))
+			encrypted += "\\";
+
+		//for loop through every character in data
+		for(char c : data.toCharArray()){
+
+			ascii_int = (int) c;
+
+			switch(field){
+				case "USERNAME":
+					//for loop through every character in username
+					if(ascii_int > 93)
+						ascii_int -= 60;
+					else
+						ascii_int += 33;
+					break;
+				case "PASSWORD":
+					//for loop through every character in password
 					if(ascii_int > 100)
 						ascii_int -= 69;
 					else
 						ascii_int += 26;
-					encrypted += Character.toString((char) ascii_int);
-				}
-				break;
-			case "PHONE_NUMBER":
-				break;
-			case "EMAIL":
-				break;
-			default:
+					break;
+				case "PHONE_NUMBER":
+					//for loop through every character in phoneNumber
+					ascii_int -= 15;
+					break;
+				case "EMAIL":
+					//for loop through every character in email
+					/*
+					if(ascii_int == 64){
+						encrypted += 
+						return encrypted;
+					}
+
+
+
+
+
+					if(ascii_int > 100)
+						ascii_int -= 69;
+					else
+						ascii_int += 26;
+					*/
+					break;
+				default:
+			}
+
+			encrypted += Character.toString((char) ascii_int);
 		}
+		
 
 		encrypted += "\\"; //end hash with two backslashes
 		return encrypted; //return hashed data as string
