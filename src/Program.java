@@ -710,22 +710,19 @@ public class Program {
 					ascii_int -= 15;
 					break;
 				case "EMAIL":
-					//for loop through every character in email
-					/*
+					//for loop through every character in email until @
+					
+					//if @ encountered, end encryption and save original domain
 					if(ascii_int == 64){
-						encrypted += 
+						encrypted += data.substring(data.indexOf("@"));
 						return encrypted;
 					}
-
-
-
-
-
-					if(ascii_int > 100)
-						ascii_int -= 69;
+					else if(ascii_int < 64)
+						ascii_int += 32;
+					else if(ascii_int > 64 && ascii_int < 96)
+						ascii_int += 31;
 					else
-						ascii_int += 26;
-					*/
+						ascii_int -= 63;
 					break;
 				default:
 			}
