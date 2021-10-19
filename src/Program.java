@@ -255,7 +255,7 @@ public class Program {
 				return empty;
 			}
 			
-			hash = encrypt(password_input); //hash user inputted password
+			hash = encrypt(password_input, "PASSWORD"); //hash user inputted password
 			
 			//if username was found in (local) database
 			if(index >= 0) {
@@ -324,9 +324,9 @@ public class Program {
 			email_input = keyboard_input.nextLine();
 			
 			//if email exists in (local memory) database
-			if(emails.contains(email_input.toLowerCase())) {
+			if(emails.contains(encrypt(email_input.toLowerCase(), "EMAIL"))) {
 				//if email is not the one listed in the database synced to specific username
-				if(!email_input.equalsIgnoreCase(emails.get(index))) {
+				if(!(encrypt(email_input, "EMAIL")).equalsIgnoreCase(emails.get(index))) {
 					System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
 					return;
 				}
@@ -369,7 +369,7 @@ public class Program {
 				
 				//if both passwords inputted match
 				if(newPassword_reenter.equals(newPassword_input)) {
-					newHash = encrypt(newPassword_input); //encrypt password
+					newHash = encrypt(newPassword_input, "PASSWORD"); //encrypt password
 					hashes.set(index, newHash); //add hash to (local memory) database
 					System.out.println("Password SUCCESSFULLY changed."); //confirmation message
 				}
@@ -438,7 +438,7 @@ public class Program {
 			}
 			
 		}while(!validPassword(input) || !password_match); //do-while, loops until a valid password is entered and reentered
-		newUser.setHash(encrypt(input)); //assign hash-password to new UserAccount
+		newUser.setHash(encrypt(input, "PASSWORD")); //assign hash-password to new UserAccount
 		
 		//phone number
 		//do-while, loops until valid and unused phone number is entered
@@ -468,12 +468,12 @@ public class Program {
 			//if invalid email
 			if(!validEmail(input))
 				System.out.println("ERROR. Email Address '" + input + "' is an INVALID email address."); //ERROR message
-			else if(emails.contains(input.toLowerCase()))
+			else if(emails.contains(encrypt(input.toLowerCase(), "EMAIL")))
 				System.out.println("ERROR. Email Address '" + input + "' is already registered with another account."); //ERROR message
 			else
 				System.out.println("Email Address '" + input + "' is now SUCCESSFULLY linked to your account."); //confirmation message
-		}while(emails.contains(input.toLowerCase()) || !validEmail(input));
-		newUser.setEmail(input.toLowerCase()); //assign email to new UserAccount
+		}while(emails.contains(encrypt(input.toLowerCase(), "EMAIL")) || !validEmail(input));
+		newUser.setEmail(encrypt(input.toLowerCase(), "EMAIL")); //assign email to new UserAccount
 		
 		//primary key
 		input = generate_primaryKey(primaryKeys); //create new and unique primary key
@@ -680,15 +680,20 @@ public class Program {
 		//declare and initialize variables
 		String encrypted = "";
 		int ascii_int;
+		int indexOfLastAt = -1;
 
 		//start hash with two backslashes UNLESS it's an email
 		if(!field.equals("EMAIL"))
 			encrypted += "\\";
+		else
+			indexOfLastAt = data.lastIndexOf("@");
 
+		char current;
 		//for loop through every character in data
-		for(char c : data.toCharArray()){
+		for(int i = 0; i < data.length(); i++){
 
-			ascii_int = (int) c;
+			current = data.charAt(i);
+			ascii_int = (int) current;
 
 			switch(field){
 				case "USERNAME":
@@ -710,12 +715,14 @@ public class Program {
 					ascii_int -= 15;
 					break;
 				case "EMAIL":
-					//for loop through every character in email until @
+					//for loop through every character in email until @ symbol (final @ symbol if multiple present)
 					
 					//if @ encountered, end encryption and save original domain
 					if(ascii_int == 64){
-						encrypted += data.substring(data.indexOf("@"));
-						return encrypted;
+						if(i == indexOfLastAt){
+							encrypted += data.substring(i);
+							return encrypted;
+						}
 					}
 					else if(ascii_int < 64)
 						ascii_int += 32;
@@ -870,7 +877,7 @@ public class Program {
 				line = keyboard_input.nextLine();
 				
 				//if incorrect password entered
-				if(!encrypt(line).equals(user.getHash()))
+				if(!encrypt(line, "PASSWORD").equals(user.getHash()))
 					break;
 				
 				String password_input;
@@ -882,7 +889,7 @@ public class Program {
 					line = keyboard_input.nextLine();
 					
 					//if current password entered
-					if(encrypt(line).equals(user.getHash())) {
+					if(encrypt(line, "PASSWORD").equals(user.getHash())) {
 						changesMade = false;
 						System.out.println("Passwords match. NO CHANGES were made.");
 						break;
@@ -910,7 +917,7 @@ public class Program {
 					}
 					
 				}while(!validPassword(line) || !password_match); //do-while, loops until a valid password is entered and reentered
-				user.setHash(encrypt(line)); //assign new hash-password to UserAccount
+				user.setHash(encrypt(line, "PASSWORD")); //assign new hash-password to UserAccount
 				
 				break;
 			case '3':
@@ -953,7 +960,7 @@ public class Program {
 					line = keyboard_input.nextLine();
 					
 					//if current username entered
-					if(line.equalsIgnoreCase(user.getEmail())) {
+					if((encrypt(line, "EMAIL")).equalsIgnoreCase(user.getEmail())) {
 						changesMade = false;
 						System.out.println("Emails match. NO CHANGES were made.");
 						break;
@@ -962,13 +969,13 @@ public class Program {
 						changesMade = true;
 						if(!validEmail(line))
 							System.out.println("ERROR. Email Address '" + line + "' is an INVALID email address."); //ERROR message
-						else if(emails.contains(line.toLowerCase()))
+						else if(emails.contains(encrypt(line.toLowerCase(), "EMAIL")))
 							System.out.println("ERROR. Email Address '" + line + "' is already registered with another account."); //ERROR message
 						else
 							System.out.println("Email Address '" + line + "' is now SUCCESSFULLY linked to your account."); //confirmation message
 					}
-				}while(emails.contains(line.toLowerCase()) || !validEmail(line)); //do-while, loops until valid and unused email is entered
-				user.setEmail(line.toLowerCase()); //assign new email to UserAccount
+				}while(emails.contains(encrypt(line.toLowerCase(), "EMAIL")) || !validEmail(line)); //do-while, loops until valid and unused email is entered
+				user.setEmail(encrypt(line.toLowerCase(), "EMAIL")); //assign new email to UserAccount
 				
 				break;
 			case '5':
@@ -979,7 +986,7 @@ public class Program {
 				
 				
 				//if incorrect password entered
-				if(!encrypt(line).equals(user.getHash())) {
+				if(!encrypt(line, "PASSWORD").equals(user.getHash())) {
 					System.out.println("ERROR. Incorrect password entered."); //ERROR message
 					break;
 				}
