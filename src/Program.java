@@ -248,8 +248,8 @@ public class Program {
 			password_input = keyboard_input.nextLine();
 			
 			//if valid username
-			if(usernames.contains(username_input.toLowerCase()))
-				index = usernames.indexOf(username_input.toLowerCase()); //get index of username
+			if(usernames.contains(encrypt(username_input.toLowerCase(), "USERNAME")))
+				index = usernames.indexOf(encrypt(username_input.toLowerCase(), "USERNAME")); //get index of username
 			else {
 				System.out.println("ERROR. Username or password is INCORRECT"); //ERROR message
 				return empty;
@@ -295,9 +295,9 @@ public class Program {
 		username_input = keyboard_input.nextLine();
 		
 		//if valid username
-		if(usernames.contains(username_input.toLowerCase())){
+		if(usernames.contains(encrypt(username_input.toLowerCase(), "USERNAME"))){
 			
-			index = usernames.indexOf(username_input.toLowerCase()); //get index of valid username
+			index = usernames.indexOf(encrypt(username_input.toLowerCase(), "USERNAME")); //get index of valid username
 			
 			//prompt user for phone number synced to account
 			System.out.print("\nPhone Number: ");
@@ -399,12 +399,12 @@ public class Program {
 			//if invalid username
 			if(!validUsername(input))
 				System.out.println("ERROR. Username '" + input + "' is INVALID. Username CANNOT contain spaces"); //ERROR message
-			else if(usernames.contains(input.toLowerCase())) //if username is already in use
+			else if(usernames.contains(encrypt(input.toLowerCase(), "USERNAME"))) //if username is already in use
 				System.out.println("ERROR. Username '" + input + "' already exists."); //ERROR message
 			else
 				System.out.println("Username '" + input + "' is VALID and available."); //confirmation message
-		}while(usernames.contains(input.toLowerCase()) || !validUsername(input)); //do-while, loops until a valid and unused username is entered
-		newUser.setUsername(input.toLowerCase()); //assign username to new UserAccount
+		}while(usernames.contains(encrypt(input.toLowerCase(), "USERNAME")) || !validUsername(input)); //do-while, loops until a valid and unused username is entered
+		newUser.setUsername(encrypt(input.toLowerCase(), "USERNAME")); //assign username to new UserAccount
 		
 		//password
 		String password_input;
@@ -852,7 +852,7 @@ public class Program {
 					line = keyboard_input.nextLine();
 					
 					//if current username entered
-					if(line.equalsIgnoreCase(user.getUsername())) {
+					if((encrypt(line.toLowerCase(), "USERNAME")).equalsIgnoreCase(user.getUsername())) {
 						changesMade = false;
 						System.out.println("Usernames match. NO CHANGES were made.");
 						break;
@@ -861,13 +861,13 @@ public class Program {
 						changesMade = true;
 						if(!validUsername(line))
 							System.out.println("ERROR. Username '" + line + "' is INVALID. Username CANNOT contain spaces"); //ERROR message
-						else if(usernames.contains(line.toLowerCase())) //if username is already in use
+						else if(usernames.contains(encrypt(line.toLowerCase(), "USERNAME"))) //if username is already in use
 							System.out.println("ERROR. Username '" + line + "' already exists."); //ERROR message
 						else
 							System.out.println("Username '" + line + "' is VALID and available."); //confirmation message
 					}	
-				}while(!changesMade || usernames.contains(line.toLowerCase()) || !validUsername(line)); //do-while, loops until either current username is entered or a valid + unused username is entered
-				user.setUsername(line.toLowerCase()); //assign new username to UserAccount
+				}while(!changesMade || usernames.contains(encrypt(line.toLowerCase(), "USERNAME")) || !validUsername(line)); //do-while, loops until either current username is entered or a valid + unused username is entered
+				user.setUsername(encrypt(line.toLowerCase(), "USERNAME")); //assign new username to UserAccount
 				
 				break;
 			case '2':
