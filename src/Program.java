@@ -466,7 +466,7 @@ public class Program {
 			input = keyboard_input.nextLine();
 			
 			//if invalid email
-			if(!validEmail(input))
+			if(!validEmail(input))2
 				System.out.println("ERROR. Email Address '" + input + "' is an INVALID email address."); //ERROR message
 			else if(emails.contains(encrypt(input.toLowerCase(), "EMAIL")))
 				System.out.println("ERROR. Email Address '" + input + "' is already registered with another account."); //ERROR message
@@ -498,7 +498,7 @@ public class Program {
 			do {
 				//display sign-in menu
 				System.out.println("\nDashboard");
-				System.out.println(logged_in.getUsername());
+				System.out.println(logged_in.displayUsername());
 				System.out.println("==================");
 				System.out.println("1) Edit account");
 				System.out.println("2) Edit vehicles");

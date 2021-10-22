@@ -83,10 +83,66 @@ public class UserAccount {
 	public String toString(){
         return "\n\nUser account credentials"
         + "\n========================"
-        + "\nUsername: " + this.username
-        + "\nPhone Number: " + this.phoneNumber
-        + "\nEmail: " + this.email;
+        + "\nUsername: " + decrypt(this.username, "USERNAME")
+        + "\nPhone Number: " + decrypt(this.phoneNumber, "PHONE_NUMBER")
+        + "\nEmail: " + decrypt(this.email, "EMAIL");
     }
-	
+	public String displayUsername(){
+		return (decrypt(this.username, "USERNAME"));
+	}
+	public String decrypt(String encrypted, String field){
+
+		//declare and initialize variables
+		String decrypted = "";
+		int ascii_int;
+		int indexOfLastAt = -1;
+
+		//handle decryption whether or not encrypted data is an EMAIL, determine index of final @ symbol
+		if(!field.equals("EMAIL"))
+			encrypted = encrypted.substring(1);
+		else
+			indexOfLastAt = encrypted.lastIndexOf("@");
+		
+		char current;
+		for(int i = 0; i < encrypted.length()-1; i++){
+			
+			current = encrypted.charAt(i);
+			ascii_int = (int) current;
+
+			switch(field){
+				case "USERNAME":
+					//for loop through every character in encrypted username
+					if(ascii_int <= 93)
+						ascii_int += 60;
+					else
+						ascii_int -= 33;
+					break;
+				case "PHONE_NUMBER":
+					//for loop through every character in encrypted phoneNumber
+					ascii_int += 15;
+					break;
+				case "EMAIL":
+					//for loop through every character in encrypted email until @ symbol (final @ symbol if multiple present)
+					
+					//if @ encountered, end decryption and return with original domain name
+					if(ascii_int == 64){
+						if(i == indexOfLastAt){
+							decrypted += encrypted.substring(i);
+							return decrypted;
+						}
+					}
+					else if(ascii_int >= 64)
+						ascii_int -= 32;
+					else if(ascii_int <= 64 && ascii_int >= 96)
+						ascii_int -= 31;
+					else
+						ascii_int += 63;
+					break;
+				default:
+			}
+			decrypted += Character.toString((char) ascii_int);
+		}
+		return decrypted;
+	}
 	
 }
