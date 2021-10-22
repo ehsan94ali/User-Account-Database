@@ -307,9 +307,9 @@ public class Program {
 			phoneNumber_input = formatPhoneNumber(phoneNumber_input);
 			
 			//if phone number exists in database
-			if(phoneNumbers.contains(phoneNumber_input)) {
+			if(phoneNumbers.contains(encrypt(phoneNumber_input, "PHONE_NUMBER"))) {
 				//if phone is not the one listed in the database synced to specific username
-				if(!phoneNumber_input.equals(phoneNumbers.get(index))) {
+				if(!(encrypt(phoneNumber_input, "PHONE_NUMBER")).equals(phoneNumbers.get(index))) {
 					System.out.println("ERROR. Phone number '" + phoneNumber_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
 					return;
 				}	
@@ -449,15 +449,15 @@ public class Program {
 			//if invalid phone number
 			if(!validPhoneNumber(input))
 				System.out.println("ERROR. Phone Number '" + input + "' is invalid. Phone number must only contain 10 digits"); //ERROR message
-			else if(phoneNumbers.contains(formatPhoneNumber(input)))
+			else if(phoneNumbers.contains(encrypt(formatPhoneNumber(input), "PHONE_NUMBER")))
 				System.out.println("ERROR. Phone Number '" + input + "' is already registered with another account."); //ERROR message
 			else {
 				System.out.println("Phone Number '" + input + "' is now SUCCESSFULLY linked to your account."); //confirmation message
 				input = formatPhoneNumber(input); //format phone number for (local memory) database
 			}
 			
-		}while(phoneNumbers.contains(formatPhoneNumber(input)) || !validPhoneNumber(input)); //do-while, loops until valid and unused phone number is entered
-		newUser.setPhoneNumber(input); //assign phone number to new UserAccount
+		}while(phoneNumbers.contains(encrypt(formatPhoneNumber(input), "PHONE_NUMBER")) || !validPhoneNumber(input)); //do-while, loops until valid and unused phone number is entered
+		newUser.setPhoneNumber(encrypt(input, "PHONE_NUMBER")); //assign phone number to new UserAccount
 		
 		//email address
 		//do-while, loops until valid and unused email is entered
@@ -933,20 +933,20 @@ public class Program {
 					//if invalid phone number
 					if(!validPhoneNumber(line))
 						System.out.println("ERROR. Phone Number '" + line + "' is invalid. Phone number must only contain 10 digits"); //ERROR message
-					else if(formatPhoneNumber(line).equals(user.getPhoneNumber())) {
+					else if(encrypt(formatPhoneNumber(line), "PHONE_NUMBER").equals(user.getPhoneNumber())) {
 						changesMade = false;
 						System.out.println("Phone numbers  match. NO CHANGES were made.");
 						break;
 					}
-					else if(phoneNumbers.contains(formatPhoneNumber(line)))
+					else if(phoneNumbers.contains(encrypt(formatPhoneNumber(line), "PHONE_NUMBER")))
 						System.out.println("ERROR. Phone Number '" + line + "' is already registered with another account."); //ERROR message
 					else {
 						changesMade = true;
 						System.out.println("Phone Number '" + line + "' is now SUCCESSFULLY linked to your account."); //confirmation message
 						line = formatPhoneNumber(line); //format phone number for (local memory) database
 					}
-				}while(!changesMade || phoneNumbers.contains(formatPhoneNumber(line)) || !validPhoneNumber(line)); //do-while, loops until valid and unused phone number is entered
-				user.setPhoneNumber(line); //assign new phone number to UserAccount
+				}while(!changesMade || phoneNumbers.contains(encrypt(formatPhoneNumber(line), "PHONE_NUMBER")) || !validPhoneNumber(line)); //do-while, loops until valid and unused phone number is entered
+				user.setPhoneNumber(encrypt(line, "PHONE_NUMBER")); //assign new phone number to UserAccount
 								
 				break;
 			case '4':
