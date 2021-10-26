@@ -221,17 +221,18 @@ public class Program {
 			System.out.println("\nSign In");
 			System.out.println("==================");
 			System.out.println("1) Login");
-			System.out.println("2) Forgot Password");
-			System.out.println("3) Back");
+			System.out.println("2) Forgot Username");
+			System.out.println("3) Forgot Password");
+			System.out.println("4) Back");
 			System.out.print("User input: ");
 			line = keyboard_input.nextLine(); //take in user input with global scanner
 			menu_input = line.charAt(0); //only takes in the first character (accounts for user error of entering multiple characters)
 			
 			//if invalid input entered
-			if(menu_input != '1' && menu_input != '2' && menu_input != '3')
+			if(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4')
 				System.out.println("\nERROR. Invalid user input."); //ERROR message
 			
-		}while(menu_input != '1' && menu_input != '2' && menu_input != '3'); //do-while, loops until user enters a valid input
+		}while(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4'); //do-while, loops until user enters a valid input
 		
 		//declare variables for sign-in
 		int index = -1; //invalid index marker
@@ -274,15 +275,18 @@ public class Program {
 			else
 				return empty;
 		}
-		else if(menu_input == '2') { //forgot password
-			forgot_password(primaryKeys, usernames, hashes, phoneNumbers, emails);
+		else if(menu_input == '2'){
+			forgot_username(usernames, hashes, phoneNumbers, emails);
+		}
+		else if(menu_input == '3') { //forgot password
+			forgot_password(usernames, hashes, phoneNumbers, emails);
 			return empty;
 		}
 		return empty;
 	}
 	
 	//prompts user for other credentials and grants user access to create new password
-	public static void forgot_password(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+	public static void forgot_password(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
 		//declare variables
 		String username_input, phoneNumber_input, email_input;
@@ -344,7 +348,6 @@ public class Program {
 		//declare variables for changing password			
 		String newPassword_input;
 		String newPassword_reenter = null;
-		String newHash;
 		
 		//do-while, loops until a valid password is entered and re-entered for security purposes
 		do {
@@ -369,8 +372,7 @@ public class Program {
 				
 				//if both passwords inputted match
 				if(newPassword_reenter.equals(newPassword_input)) {
-					newHash = encrypt(newPassword_input, "PASSWORD"); //encrypt password
-					hashes.set(index, newHash); //add hash to (local memory) database
+					hashes.set(index, encrypt(newPassword_input, "PASSWORD")); //add encrypted hash to (local memory) database
 					System.out.println("Password SUCCESSFULLY changed."); //confirmation message
 				}
 				else
@@ -380,6 +382,59 @@ public class Program {
 		}while(!validPassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
 	}
 	
+		//prompts user for other credentials and grants user access to forgotten username
+		public static void forgot_username(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+		
+			//declare variables
+			String phoneNumber_input, password_input, email_input;
+			int index;
+			
+			//display forgot password screen
+			System.out.println("\nForgot Username");
+			System.out.println("==============");
+			System.out.print("\nPhone Number: ");
+			phoneNumber_input = keyboard_input.nextLine();
+			
+			//format phone number to check (local memory) database
+			phoneNumber_input = formatPhoneNumber(phoneNumber_input);
+			
+			//if valid phone number
+			if(phoneNumbers.contains(encrypt(phoneNumber_input, "PHONE_NUMBER"))){
+				
+				index = phoneNumbers.indexOf(encrypt(phoneNumber_input, "PHONE_NUMBER")); //get index of corresponding account's phone number
+				
+				//prompt user for email synced to account
+				System.out.print("\nEmail: ");
+				email_input = keyboard_input.nextLine();
+				
+				//if email exists in (local memory) database
+				if(emails.contains(encrypt(email_input.toLowerCase(), "EMAIL"))) {
+					//if email is not the one listed in the database synced to specific phone number
+					if(!(encrypt(email_input, "EMAIL")).equalsIgnoreCase(emails.get(index))) {
+						System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + phoneNumber_input + ")."); //ERROR message
+						return;
+					}
+				}
+				else {
+					System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
+					return;
+				}
+
+				//prompt user for phone number synced to account
+				System.out.print("\nPassword: ");
+				password_input = keyboard_input.nextLine();
+				
+				if((encrypt(password_input, "PASSWORD")).equals(hashes.get(index))){
+					System.out.println("Username synced to (" + phoneNumber_input + ") and (" + email_input + "): " + displayUsername(usernames.get(index)));
+					System.out.println("**If you would like to change your username, please log in and on the dashboard select Edit Account -> Change Username**");
+				}
+				else
+					System.out.println("ERROR. Incorrect password entered."); //ERROR message
+			}
+			else
+				System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database."); //ERROR message
+		}
+
 	//create new UserAccount and add to/update (local memory) databases 
 	public static void createNewUserAccount(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
 		
@@ -466,7 +521,7 @@ public class Program {
 			input = keyboard_input.nextLine();
 			
 			//if invalid email
-			if(!validEmail(input))2
+			if(!validEmail(input))
 				System.out.println("ERROR. Email Address '" + input + "' is an INVALID email address."); //ERROR message
 			else if(emails.contains(encrypt(input.toLowerCase(), "EMAIL")))
 				System.out.println("ERROR. Email Address '" + input + "' is already registered with another account."); //ERROR message
@@ -742,6 +797,31 @@ public class Program {
 		return encrypted; //return hashed data as string
 	}
 	
+	//decrypt and return username
+	public static String displayUsername(String hashed_username){
+		
+		//declare and initialize variables
+		String decrypted = "";
+		int ascii_int;
+
+		//ignore leading forward slash (/)
+		hashed_username = hashed_username.substring(1);
+		
+		char current;
+		for(int i = 0; i < hashed_username.length()-1; i++){
+			
+			current = hashed_username.charAt(i); 
+			ascii_int = (int) current;
+
+			if(ascii_int <= 93)
+				ascii_int += 60;
+			else
+				ascii_int -= 33;
+
+			decrypted += Character.toString((char) ascii_int);
+		}
+		return decrypted;
+	}
 	//(overloaded) update file, specifically for master file with ALL user credentials
 	public static void update_file(File userAccounts, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails){
 		try {
