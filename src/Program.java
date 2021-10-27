@@ -234,55 +234,54 @@ public class Program {
 			
 		}while(menu_input != '1' && menu_input != '2' && menu_input != '3' && menu_input != '4'); //do-while, loops until user enters a valid input
 		
-		//declare variables for sign-in
-		int index = -1; //invalid index marker
-		String hash;
-		
-		if(menu_input == '1') { //login
-			
-			//display login screen
-			System.out.println("\nLogin");
-			System.out.println("====================");
-			System.out.print("\nUsername: ");
-			username_input = keyboard_input.nextLine();
-			System.out.print("\nPassword: ");
-			password_input = keyboard_input.nextLine();
-			
-			//if valid username
-			if(usernames.contains(encrypt(username_input.toLowerCase(), "USERNAME")))
-				index = usernames.indexOf(encrypt(username_input.toLowerCase(), "USERNAME")); //get index of username
-			else {
-				System.out.println("ERROR. Username or password is INCORRECT"); //ERROR message
-				return empty;
-			}
-			
-			hash = encrypt(password_input, "PASSWORD"); //hash user inputted password
-			
-			//if username was found in (local) database
-			if(index >= 0) {
+		switch(menu_input){
+			case '1':	//LOGIN
+				//declare variables for sign-in
+				int index = -1; //invalid index marker
+				String hash;
+				//display login screen
+				System.out.println("\nLogin");
+				System.out.println("====================");
+				System.out.print("\nUsername: ");
+				username_input = keyboard_input.nextLine();
+				System.out.print("\nPassword: ");
+				password_input = keyboard_input.nextLine();
 				
-				//if password is correct for specific username
-				if(hash.equals(hashes.get(index))) {
-					logged_in = new UserAccount(primaryKeys.get(index), usernames.get(index), hashes.get(index), phoneNumbers.get(index), emails.get(index));
-					System.out.println("\nSuccessful login."); //confirmation message
-					return logged_in;
-				}
+				//if valid username
+				if(usernames.contains(encrypt(username_input.toLowerCase(), "USERNAME")))
+					index = usernames.indexOf(encrypt(username_input.toLowerCase(), "USERNAME")); //get index of username
 				else {
 					System.out.println("ERROR. Username or password is INCORRECT"); //ERROR message
 					return empty;
 				}
-			}
-			else
+				
+				hash = encrypt(password_input, "PASSWORD"); //hash user inputted password
+				
+				//if username was found in (local) database
+				if(index >= 0) {
+					
+					//if password is correct for specific username
+					if(hash.equals(hashes.get(index))) {
+						logged_in = new UserAccount(primaryKeys.get(index), usernames.get(index), hashes.get(index), phoneNumbers.get(index), emails.get(index));
+						System.out.println("\nSuccessful login."); //confirmation message
+						return logged_in;
+					}
+					else {
+						System.out.println("ERROR. Username or password is INCORRECT"); //ERROR message
+						return empty;
+					}
+				}
+				else
+					return empty;
+			case '2':	//FORGOT USERNAME
+				forgot_username(usernames, hashes, phoneNumbers, emails);
+				return empty;
+			case '3':	//FORGOT PASSWORD
+				forgot_password(usernames, hashes, phoneNumbers, emails);
+				return empty;
+			default:	//BACK
 				return empty;
 		}
-		else if(menu_input == '2'){
-			forgot_username(usernames, hashes, phoneNumbers, emails);
-		}
-		else if(menu_input == '3') { //forgot password
-			forgot_password(usernames, hashes, phoneNumbers, emails);
-			return empty;
-		}
-		return empty;
 	}
 	
 	//prompts user for other credentials and grants user access to create new password
