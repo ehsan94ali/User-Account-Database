@@ -298,44 +298,62 @@ public class Program {
 		username_input = keyboard_input.nextLine();
 		
 		//if valid username
-		if(usernames.contains(encrypt(username_input.toLowerCase(), "USERNAME"))){
-			
-			index = usernames.indexOf(encrypt(username_input.toLowerCase(), "USERNAME")); //get index of valid username
-			
-			//prompt user for phone number synced to account
-			System.out.print("\nPhone Number: ");
-			phoneNumber_input = keyboard_input.nextLine();
-			
-			//format phone number to check (local memory) database
-			phoneNumber_input = formatPhoneNumber(phoneNumber_input);
-			
-			//if phone number exists in database
-			if(phoneNumbers.contains(encrypt(phoneNumber_input, "PHONE_NUMBER"))) {
-				//if phone is not the one listed in the database synced to specific username
-				if(!(encrypt(phoneNumber_input, "PHONE_NUMBER")).equals(phoneNumbers.get(index))) {
-					System.out.println("ERROR. Phone number '" + phoneNumber_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
+		if(validUsername(username_input)){
+			if(usernames.contains(encrypt(username_input.toLowerCase(), "USERNAME"))){
+				
+				index = usernames.indexOf(encrypt(username_input.toLowerCase(), "USERNAME")); //get index of valid username
+				
+				//prompt user for phone number synced to account
+				System.out.print("\nPhone Number: ");
+				phoneNumber_input = keyboard_input.nextLine();					
+				
+				if(validPhoneNumber(phoneNumber_input)){
+
+					phoneNumber_input = formatPhoneNumber(phoneNumber_input);
+					//if phone number exists in database
+					if(phoneNumbers.contains(encrypt(phoneNumber_input, "PHONE_NUMBER"))) {
+						//if phone is not the one listed in the database synced to specific username
+						if(!(encrypt(phoneNumber_input, "PHONE_NUMBER")).equals(phoneNumbers.get(index))) {
+							System.out.println("ERROR. Phone number '" + phoneNumber_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
+							return;
+						}	
+					}
+					else {
+						System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database"); //ERROR message
+						return;
+					}
+				}
+				else{
+					System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database"); //ERROR message
 					return;
-				}	
-			}
-			else {
-				System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database"); //ERROR message
-				return;
-			}
-			
-			//prompt user for email synced to account
-			System.out.print("\nEmail: ");
-			email_input = keyboard_input.nextLine();
-			
-			//if email exists in (local memory) database
-			if(emails.contains(encrypt(email_input.toLowerCase(), "EMAIL"))) {
-				//if email is not the one listed in the database synced to specific username
-				if(!(encrypt(email_input, "EMAIL")).equalsIgnoreCase(emails.get(index))) {
-					System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
+				}
+				
+				
+				//prompt user for email synced to account
+				System.out.print("\nEmail: ");
+				email_input = keyboard_input.nextLine();
+				
+				if(validEmail(email_input)){
+					//if email exists in (local memory) database
+					if(emails.contains(encrypt(email_input.toLowerCase(), "EMAIL"))) {
+						//if email is not the one listed in the database synced to specific username
+						if(!(encrypt(email_input, "EMAIL")).equalsIgnoreCase(emails.get(index))) {
+							System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + username_input + ")."); //ERROR message
+							return;
+						}
+					}
+					else {
+						System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
+						return;
+					}
+				}
+				else{
+					System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
 					return;
 				}
 			}
 			else {
-				System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
+				System.out.println("ERROR. Username '" + username_input + "' does NOT exist in our database."); //ERROR message
 				return;
 			}
 		}
@@ -381,58 +399,58 @@ public class Program {
 		}while(!validPassword(newPassword_input) || !newPassword_reenter.equals(newPassword_input)); //do-while, loops until a valid password is entered and re-entered for security purposes
 	}
 	
-		//prompts user for other credentials and grants user access to forgotten username
-		public static void forgot_username(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+	//prompts user for other credentials and grants user access to forgotten username
+	public static void forgot_username(ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
+	
+		//declare variables
+		String phoneNumber_input, password_input, email_input;
+		int index;
 		
-			//declare variables
-			String phoneNumber_input, password_input, email_input;
-			int index;
+		//display forgot password screen
+		System.out.println("\nForgot Username");
+		System.out.println("==============");
+		System.out.print("\nPhone Number: ");
+		phoneNumber_input = keyboard_input.nextLine();
+
+		if(validPhoneNumber(phoneNumber_input)){
 			
-			//display forgot password screen
-			System.out.println("\nForgot Username");
-			System.out.println("==============");
-			System.out.print("\nPhone Number: ");
-			phoneNumber_input = keyboard_input.nextLine();
-			
-			//format phone number to check (local memory) database
 			phoneNumber_input = formatPhoneNumber(phoneNumber_input);
-			
-			//if valid phone number
+
 			if(phoneNumbers.contains(encrypt(phoneNumber_input, "PHONE_NUMBER"))){
-				
 				index = phoneNumbers.indexOf(encrypt(phoneNumber_input, "PHONE_NUMBER")); //get index of corresponding account's phone number
-				
+			
 				//prompt user for email synced to account
 				System.out.print("\nEmail: ");
 				email_input = keyboard_input.nextLine();
 				
 				//if email exists in (local memory) database
 				if(emails.contains(encrypt(email_input.toLowerCase(), "EMAIL"))) {
-					//if email is not the one listed in the database synced to specific phone number
-					if(!(encrypt(email_input, "EMAIL")).equalsIgnoreCase(emails.get(index))) {
-						System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + phoneNumber_input + ")."); //ERROR message
-						return;
-					}
-				}
-				else {
-					System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
-					return;
-				}
 
-				//prompt user for phone number synced to account
-				System.out.print("\nPassword: ");
-				password_input = keyboard_input.nextLine();
-				
-				if((encrypt(password_input, "PASSWORD")).equals(hashes.get(index))){
-					System.out.println("Username synced to (" + phoneNumber_input + ") and (" + email_input + "): " + displayUsername(usernames.get(index)));
-					System.out.println("**If you would like to change your username, please log in and on the dashboard select Edit Account -> Change Username**");
+					//if email is not the one listed in the database synced to specific phone number
+					if((encrypt(email_input, "EMAIL")).equalsIgnoreCase(emails.get(index))){
+						//prompt user for phone number synced to account
+						System.out.print("\nPassword: ");
+						password_input = keyboard_input.nextLine();
+							
+						if((encrypt(password_input, "PASSWORD")).equals(hashes.get(index))){
+							System.out.println("Username synced to (" + phoneNumber_input + ") and (" + email_input + "): " + displayUsername(usernames.get(index)));
+							System.out.println("**If you would like to change your username, please log in and on the dashboard select Edit Account -> Change Username**");
+						}
+						else
+							System.out.println("ERROR. Incorrect password entered."); //ERROR message
+					}
+					else
+						System.out.println("ERROR. Email '" + email_input + "' is NOT linked to this account (" + phoneNumber_input + ")."); //ERROR message
 				}
 				else
-					System.out.println("ERROR. Incorrect password entered."); //ERROR message
+					System.out.println("ERROR. Email '" + email_input + "' does NOT exist in our database"); //ERROR message
 			}
 			else
 				System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database."); //ERROR message
 		}
+		else
+			System.out.println("ERROR. Phone number '" + phoneNumber_input + "' does NOT exist in our database."); //ERROR message
+	}
 
 	//create new UserAccount and add to/update (local memory) databases 
 	public static void createNewUserAccount(ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails) {
@@ -660,7 +678,7 @@ public class Program {
 		return (containsSpecial && containsCapital && containsLower && containsNumber); //return boolean value of all flags
 	}
 	
-	//check if phone number is valid
+	//check if phone number(either formatted or unformatted) is valid
 	public static boolean validPhoneNumber(String phoneNumber) {
 		//valid phone number contains 10 digits
 		
@@ -821,6 +839,7 @@ public class Program {
 		}
 		return decrypted;
 	}
+	
 	//(overloaded) update file, specifically for master file with ALL user credentials
 	public static void update_file(File userAccounts, ArrayList<String> primaryKeys, ArrayList<String> usernames, ArrayList<String> hashes, ArrayList<String> phoneNumbers, ArrayList<String> emails){
 		try {
