@@ -113,8 +113,8 @@ public class UserAccount {
 			switch(field){
 				case "USERNAME":
 					//for loop through every character in encrypted username
-					if(ascii_int <= 93)
-						ascii_int += 60;
+					if(ascii_int < 66)
+						ascii_int += 61;
 					else
 						ascii_int -= 33;
 					break;

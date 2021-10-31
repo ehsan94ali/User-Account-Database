@@ -771,7 +771,7 @@ public class Program {
 				case "USERNAME":
 					//for loop through every character in username
 					if(ascii_int > 93)
-						ascii_int -= 60;
+						ascii_int -= 61;
 					else
 						ascii_int += 33;
 					break;
@@ -830,8 +830,8 @@ public class Program {
 			current = hashed_username.charAt(i); 
 			ascii_int = (int) current;
 
-			if(ascii_int <= 93)
-				ascii_int += 60;
+			if(ascii_int < 66)
+				ascii_int += 61;
 			else
 				ascii_int -= 33;
 
